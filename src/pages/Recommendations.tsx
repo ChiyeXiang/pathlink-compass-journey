@@ -123,69 +123,133 @@ const Recommendations = () => {
 
         {/* Recommended Mentors */}
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-foreground mb-4">推荐导师</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">为你推荐的专业导师</h2>
           <div className="space-y-4">
-            {mentors.map((mentor) => (
-              <Card 
-                key={mentor.id} 
-                className="shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-200"
-                onClick={() => handleMentorSelect(mentor.id)}
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-start space-x-4">
-                    <Avatar className="w-16 h-16">
-                      <AvatarImage src={mentor.avatar} alt={mentor.name} />
-                      <AvatarFallback className="bg-primary text-primary-foreground text-lg">
-                        {mentor.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <div>
-                          <h3 className="font-bold text-lg text-foreground">{mentor.name}</h3>
-                          <p className="text-muted-foreground">{mentor.title}</p>
-                        </div>
-                        <div className="text-right">
-                          <div className="flex items-center text-warning mb-1">
-                            <Star className="w-4 h-4 mr-1" fill="currentColor" />
-                            <span className="font-semibold">{mentor.rating}</span>
+            {mentors.map((mentor, index) => {
+              // Generate match reasons based on mentor specialties
+              const getMatchReason = (mentorId: string) => {
+                switch(mentorId) {
+                  case "mentor1":
+                    return "李导师擅长美国商科Top20申请，与你的目标完全匹配";
+                  case "mentor2":
+                    return "王导师有丰富的理工科申请经验，特别适合技术背景提升";
+                  case "mentor3":
+                    return "张导师有多国申请经验，适合需要跨国申请策略的学生";
+                  default:
+                    return "该导师的专业背景与你的需求高度匹配";
+                }
+              };
+
+              const getRecommendedTasks = (mentorId: string) => {
+                switch(mentorId) {
+                  case "mentor1":
+                    return ["精准选校咨询", "核心文书共创", "面试技巧训练"];
+                  case "mentor2":
+                    return ["技术背景提升", "项目包装指导", "奖学金申请"];
+                  case "mentor3":
+                    return ["多国申请策略", "奖学金规划", "背景提升指导"];
+                  default:
+                    return ["选校建议", "文书指导", "申请策略"];
+                }
+              };
+
+              return (
+                <Card 
+                  key={mentor.id} 
+                  className="shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-200 relative"
+                  onClick={() => handleMentorSelect(mentor.id)}
+                >
+                  {index === 0 && (
+                    <div className="absolute -top-3 left-6">
+                      <Badge className="bg-primary text-primary-foreground px-3 py-1 rounded-full shadow-medium">
+                        🎯 最佳匹配
+                      </Badge>
+                    </div>
+                  )}
+                  
+                  <CardContent className="p-6">
+                    {/* Match Reason */}
+                    <div className="mb-4 p-3 bg-primary-light rounded-lg border-l-4 border-primary">
+                      <p className="text-sm text-primary-dark font-medium">
+                        💡 推荐理由：{getMatchReason(mentor.id)}
+                      </p>
+                    </div>
+
+                    <div className="flex items-start space-x-4">
+                      <Avatar className="w-16 h-16">
+                        <AvatarImage src={mentor.avatar} alt={mentor.name} />
+                        <AvatarFallback className="bg-primary text-primary-foreground text-lg">
+                          {mentor.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <h3 className="font-bold text-lg text-foreground">{mentor.name}</h3>
+                            <p className="text-muted-foreground">{mentor.title}</p>
                           </div>
-                          <p className="text-xs text-muted-foreground">{mentor.experience}经验</p>
+                          <div className="text-right">
+                            <div className="flex items-center text-warning mb-1">
+                              <Star className="w-4 h-4 mr-1" fill="currentColor" />
+                              <span className="font-semibold">{mentor.rating}</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">{mentor.experience}经验</p>
+                          </div>
                         </div>
-                      </div>
 
-                      <p className="text-sm text-muted-foreground mb-3">{mentor.intro}</p>
+                        <p className="text-sm text-muted-foreground mb-3">{mentor.intro}</p>
 
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {mentor.tags.map((tag) => (
-                          <Badge key={tag} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                          <span>已帮助 {mentor.students}+ 学生</span>
-                          <span>成功率 {mentor.successRate}</span>
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {mentor.tags.map((tag) => (
+                            <Badge key={tag} variant="secondary" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
                         </div>
-                        
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={(e) => handleCoffeeChat(mentor.id, e)}
-                          className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                        >
-                          <Calendar className="w-4 h-4 mr-1" />
-                          CoffeeChat
-                        </Button>
+
+                        {/* Recommended Task Combination */}
+                        <div className="mb-4 p-3 bg-accent rounded-lg">
+                          <h4 className="text-sm font-semibold text-accent-foreground mb-2">
+                            ✨ 该导师为你推荐的任务卡组合：
+                          </h4>
+                          <div className="flex flex-wrap gap-1">
+                            {getRecommendedTasks(mentor.id).map((task, taskIndex) => (
+                              <Badge key={taskIndex} variant="outline" className="text-xs border-primary text-primary">
+                                {task}
+                              </Badge>
+                            ))}
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            💡 你也可以更换导师，但价格或任务内容可能随之调整
+                          </p>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                            <span>已帮助 {mentor.students}+ 学生</span>
+                            <span>成功率 {mentor.successRate}</span>
+                            <Badge variant="outline" className="text-xs text-success border-success">
+                              可选/可换
+                            </Badge>
+                          </div>
+                          
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={(e) => handleCoffeeChat(mentor.id, e)}
+                            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-xl"
+                          >
+                            <Calendar className="w-4 h-4 mr-1" />
+                            CoffeeChat
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
 

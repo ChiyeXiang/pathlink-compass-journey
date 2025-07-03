@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Upload, Download, FileText, Clock, CheckCircle, Play, Pause, Calendar } from "lucide-react";
+import { ArrowLeft, Upload, Download, FileText, Clock, CheckCircle, Play, Pause, Calendar, User, HelpCircle, Coffee, Archive } from "lucide-react";
+import mentorLiAvatar from "@/assets/mentor-li.jpg";
 
 const Tasks = () => {
   const navigate = useNavigate();
@@ -20,19 +21,24 @@ const Tasks = () => {
       progress: 60,
       phase: "执行中",
       mentor: "李导师",
+      mentorAvatar: "/assets/mentor-li.jpg",
+      version: "v2.0",
+      hasMeetingNote: true,
+      coffeeChatRemaining: 2,
       deliverables: [
-        { name: "选校清单", status: "completed", url: "#" },
-        { name: "申请难度分析", status: "in-progress", url: "" },
-        { name: "专业匹配报告", status: "pending", url: "" },
-        { name: "时间规划表", status: "pending", url: "" }
+        { name: "选校清单", status: "completed", url: "#", version: "v2.0", reusable: true },
+        { name: "申请难度分析", status: "in-progress", url: "", version: "v1.0", reusable: true },
+        { name: "专业匹配报告", status: "pending", url: "", version: "", reusable: true },
+        { name: "时间规划表", status: "pending", url: "", version: "", reusable: true }
       ],
       timeline: [
         { phase: "启动", status: "completed", date: "2024-01-15" },
         { phase: "执行", status: "current", date: "2024-01-18" },
         { phase: "交付", status: "pending", date: "2024-01-22" }
       ],
-      nextAction: "等待导师完成申请难度分析",
-      dueDate: "2024-01-22"
+      nextAction: "请预约导师 30 分钟复盘 Meeting",
+      dueDate: "2024-01-22",
+      reusabilityNote: "该阶段成果会作为档案长期留存，未来可用于研究生申请/奖学金/交换，免费调取 5 次"
     },
     {
       id: "task2", 
@@ -42,11 +48,15 @@ const Tasks = () => {
       progress: 0,
       phase: "即将开始",
       mentor: "李导师",
+      mentorAvatar: "/assets/mentor-li.jpg",
+      version: "",
+      hasMeetingNote: false,
+      coffeeChatRemaining: 3,
       deliverables: [
-        { name: "Personal Statement初稿", status: "pending", url: "" },
-        { name: "Essay结构优化", status: "pending", url: "" },
-        { name: "语言润色", status: "pending", url: "" },
-        { name: "无限次修改", status: "pending", url: "" }
+        { name: "Personal Statement初稿", status: "pending", url: "", version: "", reusable: true },
+        { name: "Essay结构优化", status: "pending", url: "", version: "", reusable: true },
+        { name: "语言润色", status: "pending", url: "", version: "", reusable: true },
+        { name: "无限次修改", status: "pending", url: "", version: "", reusable: true }
       ],
       timeline: [
         { phase: "启动", status: "pending", date: "2024-01-25" },
@@ -54,7 +64,8 @@ const Tasks = () => {
         { phase: "交付", status: "pending", date: "2024-02-10" }
       ],
       nextAction: "等待选校任务完成后开始",
-      dueDate: "2024-02-10"
+      dueDate: "2024-02-10",
+      reusabilityNote: "文书成果可复用于多个申请项目，支持长期保存和调取"
     }
   ];
 
@@ -152,6 +163,31 @@ const Tasks = () => {
                 </CardHeader>
                 
                 <CardContent className="space-y-6">
+                  {/* Mentor Info */}
+                  <div className="flex items-center justify-between p-3 bg-accent rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                        <User className="w-5 h-5 text-primary-foreground" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-accent-foreground">执行负责人</p>
+                        <p className="text-xs text-muted-foreground">{task.mentor}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {task.hasMeetingNote && (
+                        <Badge variant="outline" className="text-xs border-success text-success">
+                          Meeting Note ✓
+                        </Badge>
+                      )}
+                      {task.version && (
+                        <Badge variant="outline" className="text-xs border-primary text-primary">
+                          {task.version}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
                   {/* Progress */}
                   <div>
                     <div className="flex justify-between text-sm mb-2">
@@ -184,7 +220,13 @@ const Tasks = () => {
 
                   {/* Deliverables */}
                   <div>
-                    <h4 className="font-semibold mb-3">交付成果</h4>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold">交付成果</h4>
+                      <div className="flex items-center space-x-1">
+                        <HelpCircle className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">可验证 • 可复用</span>
+                      </div>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {task.deliverables.map((deliverable, index) => (
                         <div key={index} className="flex items-center justify-between p-3 bg-accent rounded-lg">
@@ -192,7 +234,22 @@ const Tasks = () => {
                             <div className={getStatusColor(deliverable.status)}>
                               {getStatusIcon(deliverable.status)}
                             </div>
-                            <span className="text-sm font-medium">{deliverable.name}</span>
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm font-medium">{deliverable.name}</span>
+                                {deliverable.version && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {deliverable.version}
+                                  </Badge>
+                                )}
+                              </div>
+                              {deliverable.reusable && (
+                                <div className="flex items-center space-x-1 mt-1">
+                                  <Archive className="w-3 h-3 text-success" />
+                                  <span className="text-xs text-success">可跨奖学金使用</span>
+                                </div>
+                              )}
+                            </div>
                           </div>
                           <div className="flex space-x-2">
                             {deliverable.status === "completed" && deliverable.url && (
@@ -216,15 +273,41 @@ const Tasks = () => {
                     </div>
                   </div>
 
+                  {/* CoffeeChat Status */}
+                  <div className="p-3 bg-warning/10 rounded-lg border border-warning/20">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <Coffee className="w-4 h-4 text-warning" />
+                        <span className="text-sm font-semibold text-warning">CoffeeChat 剩余次数</span>
+                      </div>
+                      <Badge className="bg-warning text-warning-foreground">
+                        {task.coffeeChatRemaining} 次
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      每个阶段包含专业 CoffeeChat 服务，可随时预约导师答疑
+                    </p>
+                  </div>
+
                   {/* Next Action */}
                   <div className="flex items-center justify-between p-4 bg-primary-light rounded-lg">
                     <div>
-                      <p className="text-sm font-semibold text-primary-dark">下一步行动</p>
+                      <p className="text-sm font-semibold text-primary-dark">接下来要执行的任务</p>
                       <p className="text-sm text-primary-dark">{task.nextAction}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-muted-foreground">预计完成</p>
+                      <p className="text-xs text-muted-foreground">预计交付</p>
                       <p className="text-sm font-semibold text-foreground">{task.dueDate}</p>
+                    </div>
+                  </div>
+
+                  {/* Reusability Note */}
+                  <div className="p-3 bg-accent rounded-lg border border-accent">
+                    <div className="flex items-start space-x-2">
+                      <HelpCircle className="w-4 h-4 text-accent-foreground mt-0.5 flex-shrink-0" />
+                      <p className="text-xs text-accent-foreground">
+                        {task.reusabilityNote}
+                      </p>
                     </div>
                   </div>
 

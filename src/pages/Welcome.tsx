@@ -1,222 +1,445 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowRight, Upload } from "lucide-react";
+import { ArrowRight, ArrowLeft, Sparkles, Target, Users } from "lucide-react";
 
 interface FormData {
-  countries: string[];
+  mainProblem: string;
+  multipleCountries: string;
+  scholarshipInterested: string;
   field: string;
   hasTarget: string;
   targetDetails: string;
-  helpNeeded: string[];
+  hasResume: string;
+  hasRecommender: string;
+}
+
+interface MatchStats {
+  projects: number;
+  mentors: number;
 }
 
 const Welcome = () => {
   const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
-    countries: [],
+    mainProblem: "",
+    multipleCountries: "",
+    scholarshipInterested: "",
     field: "",
     hasTarget: "",
     targetDetails: "",
-    helpNeeded: [],
+    hasResume: "",
+    hasRecommender: "",
+  });
+  const [matchStats, setMatchStats] = useState<MatchStats>({
+    projects: 0,
+    mentors: 0,
   });
 
-  const countries = [
-    { id: "us", label: "美国", flag: "🇺🇸" },
-    { id: "uk", label: "英国", flag: "🇬🇧" },
-    { id: "canada", label: "加拿大", flag: "🇨🇦" },
-    { id: "europe", label: "欧洲", flag: "🇪🇺" },
-    { id: "singapore", label: "新加坡", flag: "🇸🇬" },
-    { id: "australia", label: "澳洲", flag: "🇦🇺" },
+  const mainProblems = [
+    { id: "no-direction", label: "没有明确方向", description: "还不确定具体想申请什么" },
+    { id: "find-programs", label: "想找合适项目", description: "需要帮助选择具体项目" },
+    { id: "school-selection", label: "不确定选校", description: "已有方向但需要选校建议" },
+    { id: "scholarship", label: "想拿奖学金", description: "希望获得奖学金支持" },
+    { id: "essay-help", label: "文书不会写", description: "文书写作遇到困难" },
   ];
 
   const fields = [
-    { id: "business", label: "商科" },
-    { id: "engineering", label: "理工科" },
-    { id: "social", label: "社会科学" },
-    { id: "arts", label: "人文艺术" },
-    { id: "medicine", label: "医学" },
-    { id: "law", label: "法学" },
+    { id: "business", label: "商科", examples: "MBA、金融、会计等" },
+    { id: "engineering", label: "理工科", examples: "CS、EE、机械等" },
+    { id: "social", label: "社会科学", examples: "经济、政治、心理等" },
+    { id: "arts", label: "人文艺术", examples: "设计、文学、历史等" },
+    { id: "medicine", label: "医学", examples: "临床、公卫、生物等" },
+    { id: "law", label: "法学", examples: "JD、LLM等" },
   ];
 
-  const helpOptions = [
-    { id: "school-selection", label: "选校建议" },
-    { id: "essay-writing", label: "文书写作" },
-    { id: "recommendation", label: "推荐信" },
-    { id: "interview", label: "面试辅导" },
-    { id: "application", label: "网申检查" },
-    { id: "scholarship", label: "奖学金申请" },
-  ];
+  const totalSteps = 4;
 
-  const handleCountryChange = (countryId: string, checked: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      countries: checked 
-        ? [...prev.countries, countryId]
-        : prev.countries.filter(id => id !== countryId)
-    }));
+  // Calculate match stats based on answers
+  useEffect(() => {
+    let projects = 15;
+    let mentors = 8;
+
+    if (formData.mainProblem) {
+      projects += 10;
+      mentors += 2;
+    }
+    if (formData.field) {
+      projects += 20;
+      mentors += 5;
+    }
+    if (formData.multipleCountries === "yes") {
+      projects += 15;
+      mentors += 3;
+    }
+    if (formData.scholarshipInterested === "yes") {
+      projects += 5;
+      mentors += 2;
+    }
+
+    setMatchStats({ projects, mentors });
+  }, [formData]);
+
+  const handleNext = () => {
+    if (currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      handleSubmit();
+    }
   };
 
-  const handleHelpChange = (helpId: string, checked: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      helpNeeded: checked 
-        ? [...prev.helpNeeded, helpId]
-        : prev.helpNeeded.filter(id => id !== helpId)
-    }));
+  const handlePrev = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
   };
 
   const handleSubmit = () => {
-    // Store form data in localStorage for demo purposes
     localStorage.setItem('applicationData', JSON.stringify(formData));
     navigate('/recommendations');
   };
 
-  const isFormValid = formData.countries.length > 0 && formData.field && formData.hasTarget && formData.helpNeeded.length > 0;
+  const canProceed = () => {
+    switch (currentStep) {
+      case 1: return formData.mainProblem !== "";
+      case 2: return formData.multipleCountries !== "" && formData.scholarshipInterested !== "";
+      case 3: return formData.field !== "";
+      case 4: return formData.hasTarget !== "";
+      default: return false;
+    }
+  };
 
-  return (
-    <div className="min-h-screen bg-gradient-soft">
-      <div className="container max-w-2xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-primary rounded-2xl mx-auto mb-4 flex items-center justify-center">
-            <span className="text-2xl font-bold text-primary-foreground">P+</span>
-          </div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">PathLink Apply+</h1>
-          <p className="text-muted-foreground">智能留学申请助手</p>
-        </div>
-
-        {/* Main Question */}
-        <Card className="mb-8 shadow-soft border-0">
-          <CardHeader className="text-center pb-4">
-            <CardTitle className="text-2xl text-foreground">你想申请什么项目？</CardTitle>
-            <p className="text-muted-foreground">回答几个简单问题，为你匹配最合适的申请路径</p>
-          </CardHeader>
-        </Card>
-
-        {/* Questions */}
-        <div className="space-y-6">
-          {/* Question 1: Countries */}
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
           <Card className="shadow-soft border-0">
             <CardHeader>
-              <CardTitle className="text-lg">想申请的国家或地区</CardTitle>
-              <p className="text-sm text-muted-foreground">可多选</p>
+              <CardTitle className="text-xl flex items-center">
+                <Sparkles className="w-6 h-6 mr-3 text-primary" />
+                你最想解决的问题是？
+              </CardTitle>
+              <p className="text-muted-foreground">告诉我们你的主要困扰，我们会为你匹配最合适的解决方案</p>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-3">
-                {countries.map((country) => (
-                  <div key={country.id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                    <Checkbox
-                      id={country.id}
-                      checked={formData.countries.includes(country.id)}
-                      onCheckedChange={(checked) => handleCountryChange(country.id, !!checked)}
-                    />
-                    <Label htmlFor={country.id} className="flex items-center space-x-2 cursor-pointer">
-                      <span className="text-lg">{country.flag}</span>
-                      <span>{country.label}</span>
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Question 2: Field */}
-          <Card className="shadow-soft border-0">
-            <CardHeader>
-              <CardTitle className="text-lg">意向学科方向</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <RadioGroup value={formData.field} onValueChange={(value) => setFormData(prev => ({ ...prev, field: value }))}>
-                <div className="grid grid-cols-2 gap-3">
-                  {fields.map((field) => (
-                    <div key={field.id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                      <RadioGroupItem value={field.id} id={field.id} />
-                      <Label htmlFor={field.id} className="cursor-pointer">{field.label}</Label>
+              <RadioGroup 
+                value={formData.mainProblem} 
+                onValueChange={(value) => setFormData(prev => ({ ...prev, mainProblem: value }))}
+              >
+                <div className="space-y-4">
+                  {mainProblems.map((problem) => (
+                    <div key={problem.id} className="p-4 rounded-lg hover:bg-accent transition-colors">
+                      <div className="flex items-start space-x-3">
+                        <RadioGroupItem value={problem.id} id={problem.id} className="mt-1" />
+                        <div className="flex-1">
+                          <Label htmlFor={problem.id} className="text-base font-medium cursor-pointer">
+                            {problem.label}
+                          </Label>
+                          <p className="text-sm text-muted-foreground mt-1">{problem.description}</p>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
               </RadioGroup>
             </CardContent>
           </Card>
+        );
 
-          {/* Question 3: Target */}
+      case 2:
+        return (
           <Card className="shadow-soft border-0">
             <CardHeader>
-              <CardTitle className="text-lg">是否已有目标项目</CardTitle>
+              <CardTitle className="text-xl flex items-center">
+                <Target className="w-6 h-6 mr-3 text-primary" />
+                申请偏好设置
+              </CardTitle>
+              <p className="text-muted-foreground">了解你的申请偏好，为你提供更精准的建议</p>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <RadioGroup value={formData.hasTarget} onValueChange={(value) => setFormData(prev => ({ ...prev, hasTarget: value }))}>
-                <div className="flex items-center space-x-3">
-                  <RadioGroupItem value="yes" id="target-yes" />
-                  <Label htmlFor="target-yes">是，已有明确目标</Label>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <RadioGroupItem value="partial" id="target-partial" />
-                  <Label htmlFor="target-partial">有一些想法，需要确认</Label>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <RadioGroupItem value="no" id="target-no" />
-                  <Label htmlFor="target-no">完全没有头绪</Label>
-                </div>
-              </RadioGroup>
-
-              {formData.hasTarget === "yes" && (
-                <div className="space-y-3 pt-4 border-t">
-                  <Label>项目详情（可上传截图或填写链接）</Label>
-                  <Textarea
-                    placeholder="请描述你的目标项目，如学校名称、专业等..."
-                    value={formData.targetDetails}
-                    onChange={(e) => setFormData(prev => ({ ...prev, targetDetails: e.target.value }))}
-                  />
-                  <Button variant="outline" className="w-full">
-                    <Upload className="w-4 h-4 mr-2" />
-                    上传截图
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Question 4: Help Needed */}
-          <Card className="shadow-soft border-0">
-            <CardHeader>
-              <CardTitle className="text-lg">目前最需要帮助的部分</CardTitle>
-              <p className="text-sm text-muted-foreground">可多选</p>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-3">
-                {helpOptions.map((option) => (
-                  <div key={option.id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                    <Checkbox
-                      id={option.id}
-                      checked={formData.helpNeeded.includes(option.id)}
-                      onCheckedChange={(checked) => handleHelpChange(option.id, !!checked)}
-                    />
-                    <Label htmlFor={option.id} className="cursor-pointer">{option.label}</Label>
+            <CardContent className="space-y-6">
+              {/* Multiple Countries */}
+              <div>
+                <Label className="text-base font-medium mb-3 block">是否考虑多个国家？</Label>
+                <RadioGroup 
+                  value={formData.multipleCountries} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, multipleCountries: value }))}
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                      <RadioGroupItem value="yes" id="multi-yes" />
+                      <Label htmlFor="multi-yes" className="cursor-pointer">是，希望申请多个国家</Label>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                      <RadioGroupItem value="no" id="multi-no" />
+                      <Label htmlFor="multi-no" className="cursor-pointer">否，专注单一国家</Label>
+                    </div>
                   </div>
-                ))}
+                </RadioGroup>
+              </div>
+
+              {/* Scholarship Interest */}
+              <div>
+                <Label className="text-base font-medium mb-3 block">是否考虑奖学金路径？</Label>
+                <RadioGroup 
+                  value={formData.scholarshipInterested} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, scholarshipInterested: value }))}
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                      <RadioGroupItem value="yes" id="scholarship-yes" />
+                      <Label htmlFor="scholarship-yes" className="cursor-pointer">是，希望获得奖学金支持</Label>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                      <RadioGroupItem value="no" id="scholarship-no" />
+                      <Label htmlFor="scholarship-no" className="cursor-pointer">否，主要关注录取</Label>
+                    </div>
+                  </div>
+                </RadioGroup>
               </div>
             </CardContent>
           </Card>
-        </div>
+        );
 
-        {/* Submit Button */}
-        <div className="mt-8">
-          <Button 
-            className="w-full h-14 text-lg"
-            onClick={handleSubmit}
-            disabled={!isFormValid}
-          >
-            开始匹配申请路径
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
+      case 3:
+        return (
+          <Card className="shadow-soft border-0">
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center">
+                <Users className="w-6 h-6 mr-3 text-primary" />
+                大致专业领域
+              </CardTitle>
+              <p className="text-muted-foreground">选择你感兴趣的专业方向</p>
+            </CardHeader>
+            <CardContent>
+              <RadioGroup 
+                value={formData.field} 
+                onValueChange={(value) => setFormData(prev => ({ ...prev, field: value }))}
+              >
+                <div className="space-y-4">
+                  {fields.map((field) => (
+                    <div key={field.id} className="p-4 rounded-lg hover:bg-accent transition-colors">
+                      <div className="flex items-start space-x-3">
+                        <RadioGroupItem value={field.id} id={field.id} className="mt-1" />
+                        <div className="flex-1">
+                          <Label htmlFor={field.id} className="text-base font-medium cursor-pointer">
+                            {field.label}
+                          </Label>
+                          <p className="text-sm text-muted-foreground mt-1">{field.examples}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </RadioGroup>
+            </CardContent>
+          </Card>
+        );
+
+      case 4:
+        return (
+          <Card className="shadow-soft border-0">
+            <CardHeader>
+              <CardTitle className="text-xl">补充信息（可选）</CardTitle>
+              <p className="text-muted-foreground">这些信息将帮助我们为你提供更个性化的服务</p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Target Program */}
+              <div>
+                <Label className="text-base font-medium mb-3 block">是否已有目标项目？</Label>
+                <RadioGroup 
+                  value={formData.hasTarget} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, hasTarget: value }))}
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                      <RadioGroupItem value="yes" id="target-yes" />
+                      <Label htmlFor="target-yes" className="cursor-pointer">是，已有明确目标</Label>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                      <RadioGroupItem value="partial" id="target-partial" />
+                      <Label htmlFor="target-partial" className="cursor-pointer">有一些想法，需要确认</Label>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                      <RadioGroupItem value="no" id="target-no" />
+                      <Label htmlFor="target-no" className="cursor-pointer">完全没有头绪</Label>
+                    </div>
+                  </div>
+                </RadioGroup>
+
+                {formData.hasTarget === "yes" && (
+                  <div className="mt-4 space-y-3">
+                    <Label>项目详情</Label>
+                    <Textarea
+                      placeholder="请简单描述你的目标项目，如学校名称、专业等..."
+                      value={formData.targetDetails}
+                      onChange={(e) => setFormData(prev => ({ ...prev, targetDetails: e.target.value }))}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Resume */}
+              <div>
+                <Label className="text-base font-medium mb-3 block">是否已有简历？</Label>
+                <RadioGroup 
+                  value={formData.hasResume} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, hasResume: value }))}
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                      <RadioGroupItem value="yes" id="resume-yes" />
+                      <Label htmlFor="resume-yes" className="cursor-pointer">有，且比较完整</Label>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                      <RadioGroupItem value="partial" id="resume-partial" />
+                      <Label htmlFor="resume-partial" className="cursor-pointer">有，但需要优化</Label>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                      <RadioGroupItem value="no" id="resume-no" />
+                      <Label htmlFor="resume-no" className="cursor-pointer">没有，需要从头制作</Label>
+                    </div>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              {/* Recommender */}
+              <div>
+                <Label className="text-base font-medium mb-3 block">是否已有推荐人？</Label>
+                <RadioGroup 
+                  value={formData.hasRecommender} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, hasRecommender: value }))}
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                      <RadioGroupItem value="yes" id="recommender-yes" />
+                      <Label htmlFor="recommender-yes" className="cursor-pointer">有，且已确认</Label>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                      <RadioGroupItem value="partial" id="recommender-partial" />
+                      <Label htmlFor="recommender-partial" className="cursor-pointer">有想法，需要确认</Label>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                      <RadioGroupItem value="no" id="recommender-no" />
+                      <Label htmlFor="recommender-no" className="cursor-pointer">没有，需要帮助</Label>
+                    </div>
+                  </div>
+                </RadioGroup>
+              </div>
+            </CardContent>
+          </Card>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-soft">
+      <div className="container max-w-4xl mx-auto px-4 py-8">
+        <div className="flex">
+          {/* Left Column - Form */}
+          <div className="flex-1 pr-8">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-gradient-primary rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                <span className="text-2xl font-bold text-primary-foreground">P+</span>
+              </div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">智能申请路径匹配</h1>
+              <p className="text-muted-foreground">60秒智能问卷，为你定制专属申请方案</p>
+            </div>
+
+            {/* Progress */}
+            <Card className="mb-8 shadow-soft border-0">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-medium text-foreground">第 {currentStep} 步，共 {totalSteps} 步</span>
+                  <span className="text-sm text-muted-foreground">{Math.round((currentStep / totalSteps) * 100)}% 完成</span>
+                </div>
+                <Progress value={(currentStep / totalSteps) * 100} className="h-2" />
+              </CardContent>
+            </Card>
+
+            {/* Step Content */}
+            {renderStepContent()}
+
+            {/* Navigation */}
+            <div className="flex justify-between mt-8">
+              <Button 
+                variant="outline" 
+                onClick={handlePrev}
+                disabled={currentStep === 1}
+                className="rounded-xl"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                上一步
+              </Button>
+              
+              <Button 
+                onClick={handleNext}
+                disabled={!canProceed()}
+                className="rounded-xl px-8"
+              >
+                {currentStep === totalSteps ? '查看推荐路径' : '下一步'}
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Right Column - Match Stats */}
+          <div className="w-80">
+            <div className="sticky top-8">
+              <Card className="shadow-soft border-0 mb-6">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center">
+                    <Sparkles className="w-5 h-5 mr-2 text-primary" />
+                    实时匹配结果
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center space-y-4">
+                    <div className="p-4 bg-primary-light rounded-xl">
+                      <div className="text-3xl font-bold text-primary mb-1">{matchStats.projects}</div>
+                      <p className="text-sm text-primary-dark">个匹配项目</p>
+                    </div>
+                    
+                    <div className="p-4 bg-success/10 rounded-xl">
+                      <div className="text-3xl font-bold text-success mb-1">{matchStats.mentors}</div>
+                      <p className="text-sm text-success">位专业导师</p>
+                    </div>
+
+                    <div className="p-3 bg-accent rounded-lg">
+                      <p className="text-xs text-accent-foreground">
+                        💡 答题越多，匹配越精准！已为你筛选出最适合的导师和项目
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Tips */}
+              <Card className="shadow-soft border-0">
+                <CardHeader>
+                  <CardTitle className="text-lg">💡 小贴士</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3 text-sm text-muted-foreground">
+                    <p>• 回答越详细，匹配结果越精准</p>
+                    <p>• 可以随时返回修改答案</p>
+                    <p>• 所有信息都将保密处理</p>
+                    <p>• 完成问卷后即可查看专属路径</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>
