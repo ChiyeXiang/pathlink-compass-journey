@@ -101,10 +101,7 @@ const Index = () => {
             <span className="text-3xl font-bold text-primary-foreground">P+</span>
           </div>
           <h1 className="text-4xl font-bold text-foreground mb-4">PathLink Apply+</h1>
-          <p className="text-xl text-primary font-semibold mb-2">不只是推荐服务，而是为你找到最合适的引路人</p>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            基于智能匹配算法，为每位学生定制专属申请路径，让顶尖导师全程陪伴你的留学申请之旅
-          </p>
+          <p className="text-xl text-primary font-semibold mb-6">不只是推荐服务，而是为你找到最合适的引路人</p>
         </div>
 
         {/* Main Action Buttons */}
@@ -275,8 +272,8 @@ const Index = () => {
           </CardContent>
         </Card>
 
-        {/* Progress Float */}
-        <div className="fixed bottom-6 right-6 z-50">
+        {/* Progress Float - moved to top right */}
+        <div className="fixed top-6 right-6 z-50">
           <Card className="shadow-medium border-0 w-80 bg-white/95 backdrop-blur-sm">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">

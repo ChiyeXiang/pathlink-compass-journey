@@ -25,23 +25,86 @@ const Profile = () => {
     {
       category: "文书材料",
       items: [
-        { name: "Personal Statement", version: "v3.0", date: "2024-01-20", mentor: "李导师", type: "essay" },
-        { name: "推荐信模板", version: "v1.0", date: "2024-01-18", mentor: "李导师", type: "template" },
-        { name: "简历优化版", version: "v2.0", date: "2024-01-15", mentor: "李导师", type: "resume" }
+        { 
+          name: "Personal Statement", 
+          version: "v3.0", 
+          date: "2024-01-20", 
+          mentor: "李导师", 
+          type: "essay",
+          reusableCount: 5,
+          fileId: "PS001",
+          isReusable: true
+        },
+        { 
+          name: "推荐信模板", 
+          version: "v1.0", 
+          date: "2024-01-18", 
+          mentor: "李导师", 
+          type: "template",
+          reusableCount: 5,
+          fileId: "RL001",
+          isReusable: true
+        },
+        { 
+          name: "简历优化版", 
+          version: "v2.0", 
+          date: "2024-01-15", 
+          mentor: "李导师", 
+          type: "resume",
+          reusableCount: 5,
+          fileId: "CV001",
+          isReusable: true
+        }
       ]
     },
     {
       category: "申请策略",
       items: [
-        { name: "精准选校清单", version: "v1.0", date: "2024-01-16", mentor: "李导师", type: "strategy" },
-        { name: "申请时间规划", version: "v1.0", date: "2024-01-16", mentor: "李导师", type: "timeline" },
-        { name: "背景提升建议", version: "v1.0", date: "2024-01-12", mentor: "李导师", type: "advice" }
+        { 
+          name: "精准选校清单", 
+          version: "v1.0", 
+          date: "2024-01-16", 
+          mentor: "李导师", 
+          type: "strategy",
+          reusableCount: 5,
+          fileId: "SC001",
+          isReusable: true
+        },
+        { 
+          name: "申请时间规划", 
+          version: "v1.0", 
+          date: "2024-01-16", 
+          mentor: "李导师", 
+          type: "timeline",
+          reusableCount: 3,
+          fileId: "TL001",
+          isReusable: true
+        },
+        { 
+          name: "背景提升建议", 
+          version: "v1.0", 
+          date: "2024-01-12", 
+          mentor: "李导师", 
+          type: "advice",
+          reusableCount: 5,
+          fileId: "BG001",
+          isReusable: true
+        }
       ]
     },
     {
       category: "面试准备",
       items: [
-        { name: "面试反馈报告", version: "v1.0", date: "2024-01-22", mentor: "李导师", type: "feedback" }
+        { 
+          name: "面试反馈报告", 
+          version: "v1.0", 
+          date: "2024-01-22", 
+          mentor: "李导师", 
+          type: "feedback",
+          reusableCount: 2,
+          fileId: "IV001",
+          isReusable: true
+        }
       ]
     }
   ];
@@ -173,28 +236,48 @@ const Profile = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {category.items.map((item, itemIndex) => (
-                      <div key={itemIndex} className="flex items-center justify-between p-4 bg-accent rounded-lg hover:bg-accent/80 transition-colors">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-2xl">{getFileIcon(item.type)}</span>
-                          <div>
-                            <h4 className="font-semibold text-foreground">{item.name}</h4>
-                            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                              <span>{item.date}</span>
-                              <span>•</span>
-                              <span>{item.mentor}</span>
-                              <Badge variant="outline" className="text-xs ml-2">
-                                {item.version}
-                              </Badge>
+                      <div key={itemIndex} className="p-4 bg-accent rounded-lg hover:bg-accent/80 transition-colors">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-2xl">{getFileIcon(item.type)}</span>
+                            <div>
+                              <div className="flex items-center space-x-2 mb-1">
+                                <h4 className="font-semibold text-foreground">{item.name}</h4>
+                                <Badge variant="outline" className="text-xs border-primary text-primary">
+                                  {item.version}
+                                </Badge>
+                                <Badge className="text-xs bg-primary text-primary-foreground">
+                                  {item.fileId}
+                                </Badge>
+                              </div>
+                              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                                <span>{item.date}</span>
+                                <span>•</span>
+                                <span>{item.mentor}</span>
+                              </div>
                             </div>
                           </div>
+                          <div className="flex space-x-2">
+                            <Button size="sm" variant="ghost">
+                              <FileText className="w-4 h-4" />
+                            </Button>
+                            <Button size="sm" variant="ghost">
+                              <Download className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </div>
-                        <div className="flex space-x-2">
-                          <Button size="sm" variant="ghost">
-                            <FileText className="w-4 h-4" />
-                          </Button>
-                          <Button size="sm" variant="ghost">
-                            <Download className="w-4 h-4" />
-                          </Button>
+                        
+                        {/* Reusability Information */}
+                        <div className="flex items-center justify-between p-2 bg-success/10 rounded border border-success/20">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xs text-success font-medium">🔄 可复用</span>
+                            <span className="text-xs text-muted-foreground">
+                              用于奖学金/交换/研究生申请
+                            </span>
+                          </div>
+                          <Badge variant="outline" className="text-xs border-success text-success">
+                            剩余 {item.reusableCount} 次调取
+                          </Badge>
                         </div>
                       </div>
                     ))}

@@ -13,11 +13,14 @@ const Recommendations = () => {
   const navigate = useNavigate();
   const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
 
-  const applicationPath = [
-    { id: 1, title: "选校建议", status: "current", description: "基于你的背景精准匹配院校" },
-    { id: 2, title: "文书写作", status: "upcoming", description: "个性化文书指导与修改" },
-    { id: 3, title: "网申检查", status: "upcoming", description: "确保申请材料完整准确" },
-    { id: 4, title: "模拟面试", status: "upcoming", description: "专业面试技巧训练" },
+  const executionPath = [
+    { id: 1, title: "精准选校", status: "current", duration: "1-2周", icon: "🎯", description: "基于你的背景精准匹配院校" },
+    { id: 2, title: "核心文书", status: "upcoming", duration: "2-3周", icon: "✍️", description: "深度挖掘个人故事，打造独特文书" },
+    { id: 3, title: "针对性文书", status: "upcoming", duration: "1-2周", icon: "📝", description: "Why School等针对性文书创作" },
+    { id: 4, title: "简历优化", status: "upcoming", duration: "1周", icon: "📄", description: "专业简历设计与优化" },
+    { id: 5, title: "推荐信", status: "upcoming", duration: "1-2周", icon: "💌", description: "推荐人匹配与内容设计" },
+    { id: 6, title: "网申体检", status: "upcoming", duration: "1周", icon: "✅", description: "全面网申材料检查" },
+    { id: 7, title: "模拟面试", status: "upcoming", duration: "1周", icon: "🎤", description: "专业面试技巧培训" },
   ];
 
   const mentors = [
@@ -83,40 +86,53 @@ const Recommendations = () => {
           <p className="text-muted-foreground">基于你的需求，我们为你匹配了最合适的导师和服务路径</p>
         </div>
 
-        {/* Application Path */}
-        <Card className="mb-6 shadow-soft border-0">
+        {/* Execution Path Timeline */}
+        <Card className="mb-8 shadow-soft border-0">
           <CardHeader>
-            <CardTitle className="flex items-center">
+            <CardTitle className="flex items-center justify-center">
               <Award className="w-5 h-5 mr-2 text-primary" />
-              推荐申请路径
+              你的专属申请执行链
             </CardTitle>
+            <p className="text-center text-muted-foreground text-sm">点击每个阶段查看详细内容与负责导师</p>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {applicationPath.map((step, index) => (
-                <div key={step.id} className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-4 ${
-                    step.status === 'current' 
-                      ? 'bg-primary text-primary-foreground' 
-                      : step.status === 'completed'
-                      ? 'bg-success text-success-foreground'
-                      : 'bg-muted text-muted-foreground'
-                  }`}>
-                    {step.status === 'completed' ? (
-                      <CheckCircle className="w-4 h-4" />
-                    ) : (
-                      <span className="text-sm font-semibold">{step.id}</span>
-                    )}
+          <CardContent className="p-6">
+            <div className="relative">
+              {/* Timeline line */}
+              <div className="absolute top-8 left-8 right-8 h-0.5 bg-border z-0"></div>
+              
+              <div className="flex overflow-x-auto space-x-4 pb-4">
+                {executionPath.map((step, index) => (
+                  <div key={step.id} className="flex-shrink-0 relative z-10">
+                    <Card className={`w-40 shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-300 ${
+                      step.status === 'current' ? 'ring-2 ring-primary' : ''
+                    }`}>
+                      <CardContent className="p-4 text-center">
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl ${
+                          step.status === 'current' 
+                            ? 'bg-primary text-primary-foreground' 
+                            : step.status === 'completed'
+                            ? 'bg-success text-success-foreground'
+                            : 'bg-muted text-muted-foreground'
+                        }`}>
+                          {step.status === 'completed' ? (
+                            <CheckCircle className="w-6 h-6" />
+                          ) : (
+                            <span>{step.icon}</span>
+                          )}
+                        </div>
+                        <h4 className="font-semibold text-sm text-foreground mb-1">{step.title}</h4>
+                        <p className="text-xs text-muted-foreground mb-2">{step.duration}</p>
+                        <Badge 
+                          variant={step.status === 'current' ? 'default' : 'outline'} 
+                          className="text-xs"
+                        >
+                          {step.status === 'current' ? '进行中' : step.status === 'completed' ? '已完成' : '待开始'}
+                        </Badge>
+                      </CardContent>
+                    </Card>
                   </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-foreground">{step.title}</h4>
-                    <p className="text-sm text-muted-foreground">{step.description}</p>
-                  </div>
-                  {index < applicationPath.length - 1 && (
-                    <div className="w-px h-8 bg-border ml-4 mr-4"></div>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </CardContent>
         </Card>

@@ -163,28 +163,38 @@ const Tasks = () => {
                 </CardHeader>
                 
                 <CardContent className="space-y-6">
-                  {/* Mentor Info */}
-                  <div className="flex items-center justify-between p-3 bg-accent rounded-lg">
+                   {/* Mentor Info with Avatar */}
+                  <div className="flex items-center justify-between p-4 bg-accent rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                        <User className="w-5 h-5 text-primary-foreground" />
-                      </div>
+                      <img 
+                        src={task.mentorAvatar} 
+                        alt={task.mentor}
+                        className="w-12 h-12 rounded-full object-cover"
+                      />
                       <div>
                         <p className="text-sm font-semibold text-accent-foreground">执行负责人</p>
-                        <p className="text-xs text-muted-foreground">{task.mentor}</p>
+                        <p className="text-sm text-foreground">{task.mentor}</p>
+                        <Button variant="ghost" size="sm" className="h-6 px-2 mt-1 text-xs">
+                          联系导师
+                        </Button>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      {task.hasMeetingNote && (
-                        <Badge variant="outline" className="text-xs border-success text-success">
-                          Meeting Note ✓
-                        </Badge>
-                      )}
-                      {task.version && (
-                        <Badge variant="outline" className="text-xs border-primary text-primary">
-                          {task.version}
-                        </Badge>
-                      )}
+                    <div className="flex flex-col items-end space-y-2">
+                      <div className="flex items-center space-x-2">
+                        {task.hasMeetingNote && (
+                          <Badge variant="outline" className="text-xs border-success text-success">
+                            Meeting Note ✓
+                          </Badge>
+                        )}
+                        {task.version && (
+                          <Badge variant="outline" className="text-xs border-primary text-primary">
+                            {task.version}
+                          </Badge>
+                        )}
+                      </div>
+                      <Badge className="text-xs bg-accent-foreground text-accent">
+                        已留痕 • 可跨奖学金使用
+                      </Badge>
                     </div>
                   </div>
 

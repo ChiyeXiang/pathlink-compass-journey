@@ -103,8 +103,14 @@ const Welcome = () => {
 
   const handleSubmit = () => {
     localStorage.setItem('applicationData', JSON.stringify(formData));
-    navigate('/recommendations');
+    // Add loading animation
+    setIsLoading(true);
+    setTimeout(() => {
+      navigate('/recommendations');
+    }, 3000);
   };
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const canProceed = () => {
     switch (currentStep) {
@@ -340,6 +346,29 @@ const Welcome = () => {
         return null;
     }
   };
+
+  // Loading state component
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
+        <Card className="shadow-soft border-0 p-8 text-center">
+          <div className="w-16 h-16 bg-gradient-primary rounded-2xl mx-auto mb-6 flex items-center justify-center animate-pulse">
+            <span className="text-2xl font-bold text-primary-foreground">P+</span>
+          </div>
+          <h2 className="text-2xl font-bold text-foreground mb-4">正在为你匹配导师与路径...</h2>
+          <div className="w-64 mx-auto">
+            <Progress value={66} className="h-2 mb-4" />
+          </div>
+          <p className="text-muted-foreground mb-4">基于你的回答，我们正在筛选最合适的专业导师</p>
+          <div className="flex justify-center space-x-4 text-sm text-muted-foreground">
+            <span>✓ 分析申请偏好</span>
+            <span>✓ 匹配导师背景</span>
+            <span className="text-primary">• 生成专属路径</span>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-soft">
