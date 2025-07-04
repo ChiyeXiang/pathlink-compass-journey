@@ -8,92 +8,78 @@ import { ArrowRight, Calendar, Clock, CheckCircle, Play, Users, Target, Sparkles
 import mentorLiAvatar from "@/assets/mentor-li.jpg";
 import mentorWangAvatar from "@/assets/mentor-wang.jpg";
 import mentorZhangAvatar from "@/assets/mentor-zhang.jpg";
-
 const Index = () => {
   const navigate = useNavigate();
-
-  const executionPath = [
-    { 
-      id: 1, 
-      title: "选校策略", 
-      description: "精准定位目标院校", 
-      mentor: "李导师",
-      status: "waiting",
-      price: "¥1,299",
-      originalPrice: "¥1,599"
-    },
-    { 
-      id: 2, 
-      title: "文书创作", 
-      description: "深度挖掘个人故事", 
-      mentor: "李导师",
-      status: "waiting",
-      price: "¥2,599", 
-      originalPrice: "¥3,199"
-    },
-    { 
-      id: 3, 
-      title: "推荐信规划", 
-      description: "推荐人匹配与内容设计", 
-      mentor: "李导师",
-      status: "waiting",
-      price: "¥899",
-      originalPrice: "¥1,099" 
-    },
-    { 
-      id: 4, 
-      title: "面试训练", 
-      description: "专业面试技巧培训", 
-      mentor: "李导师",
-      status: "waiting",
-      price: "¥1,899",
-      originalPrice: "¥2,299"
-    }
-  ];
-
-  const packages = [
-    {
-      id: "basic",
-      name: "基础成长包",
-      description: "适合有明确目标的申请者",
-      price: "¥3,999",
-      originalPrice: "¥5,097",
-      savings: "¥1,098",
-      popular: true
-    },
-    {
-      id: "premium", 
-      name: "多校执行包",
-      description: "全方位申请支持方案",
-      price: "¥5,699",
-      originalPrice: "¥7,396", 
-      savings: "¥1,697",
-      recommended: true
-    },
-    {
-      id: "elite",
-      name: "名校挑战包", 
-      description: "冲刺顶尖院校定制服务",
-      price: "¥8,999",
-      originalPrice: "¥12,999",
-      savings: "¥4,000",
-      exclusive: true
-    }
-  ];
+  const executionPath = [{
+    id: 1,
+    title: "选校策略",
+    description: "精准定位目标院校",
+    mentor: "李导师",
+    status: "waiting",
+    price: "¥1,299",
+    originalPrice: "¥1,599"
+  }, {
+    id: 2,
+    title: "文书创作",
+    description: "深度挖掘个人故事",
+    mentor: "李导师",
+    status: "waiting",
+    price: "¥2,599",
+    originalPrice: "¥3,199"
+  }, {
+    id: 3,
+    title: "推荐信规划",
+    description: "推荐人匹配与内容设计",
+    mentor: "李导师",
+    status: "waiting",
+    price: "¥899",
+    originalPrice: "¥1,099"
+  }, {
+    id: 4,
+    title: "面试训练",
+    description: "专业面试技巧培训",
+    mentor: "李导师",
+    status: "waiting",
+    price: "¥1,899",
+    originalPrice: "¥2,299"
+  }];
+  const packages = [{
+    id: "basic",
+    name: "基础成长包",
+    description: "适合有明确目标的申请者",
+    price: "¥3,999",
+    originalPrice: "¥5,097",
+    savings: "¥1,098",
+    popular: true
+  }, {
+    id: "premium",
+    name: "多校执行包",
+    description: "全方位申请支持方案",
+    price: "¥5,699",
+    originalPrice: "¥7,396",
+    savings: "¥1,697",
+    recommended: true
+  }, {
+    id: "elite",
+    name: "名校挑战包",
+    description: "冲刺顶尖院校定制服务",
+    price: "¥8,999",
+    originalPrice: "¥12,999",
+    savings: "¥4,000",
+    exclusive: true
+  }];
 
   // Simulated current student progress
   const currentProgress = {
     student: "张同学",
     task: "Why School文书",
-    mentor: "李老师", 
+    mentor: "李老师",
     status: "进行中",
     version: "1/3 稿",
     dueDate: "8月10日",
     progress: 33
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-soft">
+  return <div className="min-h-screen bg-gradient-soft">
       <div className="container max-w-6xl mx-auto px-4 py-8">
         {/* Hero Section */}
         <div className="text-center mb-12">
@@ -106,10 +92,7 @@ const Index = () => {
 
         {/* Main Action Buttons */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <Card 
-            className="shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-300 transform hover:-translate-y-1"
-            onClick={() => navigate('/welcome')}
-          >
+          <Card className="shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-300 transform hover:-translate-y-1" onClick={() => navigate('/welcome')}>
             <CardContent className="p-6 text-center">
               <div className="w-16 h-16 bg-primary-light rounded-2xl mx-auto mb-4 flex items-center justify-center">
                 <Sparkles className="w-8 h-8 text-primary" />
@@ -123,38 +106,12 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          <Card 
-            className="shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-300 transform hover:-translate-y-1"
-            onClick={() => navigate('/recommendations')}
-          >
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 bg-success/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                <Target className="w-8 h-8 text-success" />
-              </div>
-              <h3 className="text-lg font-bold text-foreground mb-2">查看执行链</h3>
-              <p className="text-sm text-muted-foreground mb-4">组合包方案与路径规划</p>
-              <Button variant="outline" className="w-full rounded-xl border-success text-success hover:bg-success hover:text-success-foreground">
-                查看服务路径
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </CardContent>
+          <Card className="shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-300 transform hover:-translate-y-1" onClick={() => navigate('/recommendations')}>
+            
           </Card>
 
-          <Card 
-            className="shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-300 transform hover:-translate-y-1"
-            onClick={() => navigate('/coffee-chat')}
-          >
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 bg-warning/20 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                <Calendar className="w-8 h-8 text-warning" />
-              </div>
-              <h3 className="text-lg font-bold text-foreground mb-2">预约免费CoffeeChat</h3>
-              <p className="text-sm text-muted-foreground mb-4">30分钟专业咨询</p>
-              <Button variant="outline" className="w-full rounded-xl border-warning text-warning hover:bg-warning hover:text-warning-foreground">
-                立即预约
-                <Calendar className="w-4 h-4 ml-2" />
-              </Button>
-            </CardContent>
+          <Card className="shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-300 transform hover:-translate-y-1" onClick={() => navigate('/coffee-chat')}>
+            
           </Card>
         </div>
 
@@ -170,12 +127,7 @@ const Index = () => {
               <div className="absolute top-8 left-8 right-8 h-0.5 bg-border"></div>
               
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
-                {executionPath.map((step, index) => (
-                  <Card 
-                    key={step.id} 
-                    className="relative bg-white shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-300 transform hover:-translate-y-2"
-                    onClick={() => navigate('/mentor-detail')}
-                  >
+                {executionPath.map((step, index) => <Card key={step.id} className="relative bg-white shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-300 transform hover:-translate-y-2" onClick={() => navigate('/mentor-detail')}>
                     <CardContent className="p-6 text-center">
                       {/* Step Number */}
                       <div className="w-12 h-12 bg-primary rounded-full mx-auto mb-4 flex items-center justify-center text-primary-foreground font-bold text-lg shadow-medium">
@@ -200,16 +152,12 @@ const Index = () => {
                           <span className="text-xs text-muted-foreground line-through">{step.originalPrice}</span>
                           <span className="text-sm font-bold text-primary">{step.price}</span>
                         </div>
-                        <Badge 
-                          variant="outline" 
-                          className="text-xs border-primary text-primary"
-                        >
+                        <Badge variant="outline" className="text-xs border-primary text-primary">
                           {step.status === 'waiting' ? '可预约' : step.status}
                         </Badge>
                       </div>
                     </CardContent>
-                  </Card>
-                ))}
+                  </Card>)}
               </div>
             </div>
           </CardContent>
@@ -223,21 +171,12 @@ const Index = () => {
           </CardHeader>
           <CardContent className="p-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {packages.map((pkg) => (
-                <Card 
-                  key={pkg.id}
-                  className={`relative shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-300 transform hover:-translate-y-1 ${
-                    pkg.recommended ? 'ring-2 ring-primary' : ''
-                  }`}
-                  onClick={() => navigate('/mentor-detail')}
-                >
-                  {pkg.recommended && (
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+              {packages.map(pkg => <Card key={pkg.id} className={`relative shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-300 transform hover:-translate-y-1 ${pkg.recommended ? 'ring-2 ring-primary' : ''}`} onClick={() => navigate('/mentor-detail')}>
+                  {pkg.recommended && <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                       <Badge className="bg-primary text-primary-foreground px-4 py-1 rounded-full shadow-medium">
                         推荐选择
                       </Badge>
-                    </div>
-                  )}
+                    </div>}
                   
                   <CardContent className="p-6">
                     <div className="text-center mb-6">
@@ -255,19 +194,13 @@ const Index = () => {
                       </div>
                     </div>
 
-                    <Button 
-                      className={`w-full rounded-xl ${
-                        pkg.recommended ? 'bg-primary hover:bg-primary/90' : ''
-                      }`}
-                      variant={pkg.recommended ? 'default' : 'outline'}
-                    >
+                    <Button className={`w-full rounded-xl ${pkg.recommended ? 'bg-primary hover:bg-primary/90' : ''}`} variant={pkg.recommended ? 'default' : 'outline'}>
                       {pkg.popular && '🔥 '}
                       {pkg.exclusive && '⭐ '}
                       查看详情
                     </Button>
                   </CardContent>
-                </Card>
-              ))}
+                </Card>)}
             </div>
           </CardContent>
         </Card>
@@ -308,18 +241,13 @@ const Index = () => {
                     <span className="text-foreground font-medium">{currentProgress.dueDate}</span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">
-                    <div 
-                      className="bg-primary h-2 rounded-full transition-all duration-300" 
-                      style={{ width: `${currentProgress.progress}%` }}
-                    ></div>
+                    <div className="bg-primary h-2 rounded-full transition-all duration-300" style={{
+                    width: `${currentProgress.progress}%`
+                  }}></div>
                   </div>
                 </div>
                 
-                <Button 
-                  size="sm" 
-                  className="w-full rounded-xl text-xs"
-                  onClick={() => navigate('/tasks')}
-                >
+                <Button size="sm" className="w-full rounded-xl text-xs" onClick={() => navigate('/tasks')}>
                   查看详细进度
                 </Button>
               </div>
@@ -327,8 +255,6 @@ const Index = () => {
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
