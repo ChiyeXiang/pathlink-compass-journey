@@ -10,7 +10,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
 import { ArrowRight, ArrowLeft, Sparkles, Target, Users, User, Lock } from "lucide-react";
-
 interface FormData {
   mainProblem: string;
   multipleCountries: string;
@@ -21,12 +20,10 @@ interface FormData {
   hasResume: string;
   hasRecommender: string;
 }
-
 interface MatchStats {
   projects: number;
   mentors: number;
 }
-
 const Welcome = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0); // Start with login/register step
@@ -36,7 +33,7 @@ const Welcome = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    name: "",
+    name: ""
   });
   const [formData, setFormData] = useState<FormData>({
     mainProblem: "",
@@ -46,37 +43,64 @@ const Welcome = () => {
     hasTarget: "",
     targetDetails: "",
     hasResume: "",
-    hasRecommender: "",
+    hasRecommender: ""
   });
   const [matchStats, setMatchStats] = useState<MatchStats>({
     projects: 0,
-    mentors: 0,
+    mentors: 0
   });
-
-  const mainProblems = [
-    { id: "no-direction", label: "没有明确方向", description: "还不确定具体想申请什么" },
-    { id: "find-programs", label: "想找合适项目", description: "需要帮助选择具体项目" },
-    { id: "school-selection", label: "不确定选校", description: "已有方向但需要选校建议" },
-    { id: "scholarship", label: "想拿奖学金", description: "希望获得奖学金支持" },
-    { id: "essay-help", label: "文书不会写", description: "文书写作遇到困难" },
-  ];
-
-  const fields = [
-    { id: "business", label: "商科", examples: "MBA、金融、会计等" },
-    { id: "engineering", label: "理工科", examples: "CS、EE、机械等" },
-    { id: "social", label: "社会科学", examples: "经济、政治、心理等" },
-    { id: "arts", label: "人文艺术", examples: "设计、文学、历史等" },
-    { id: "medicine", label: "医学", examples: "临床、公卫、生物等" },
-    { id: "law", label: "法学", examples: "JD、LLM等" },
-  ];
-
+  const mainProblems = [{
+    id: "no-direction",
+    label: "没有明确方向",
+    description: "还不确定具体想申请什么"
+  }, {
+    id: "find-programs",
+    label: "想找合适项目",
+    description: "需要帮助选择具体项目"
+  }, {
+    id: "school-selection",
+    label: "不确定选校",
+    description: "已有方向但需要选校建议"
+  }, {
+    id: "scholarship",
+    label: "想拿奖学金",
+    description: "希望获得奖学金支持"
+  }, {
+    id: "essay-help",
+    label: "文书不会写",
+    description: "文书写作遇到困难"
+  }];
+  const fields = [{
+    id: "business",
+    label: "商科",
+    examples: "MBA、金融、会计等"
+  }, {
+    id: "engineering",
+    label: "理工科",
+    examples: "CS、EE、机械等"
+  }, {
+    id: "social",
+    label: "社会科学",
+    examples: "经济、政治、心理等"
+  }, {
+    id: "arts",
+    label: "人文艺术",
+    examples: "设计、文学、历史等"
+  }, {
+    id: "medicine",
+    label: "医学",
+    examples: "临床、公卫、生物等"
+  }, {
+    id: "law",
+    label: "法学",
+    examples: "JD、LLM等"
+  }];
   const totalSteps = 5; // Including login step
 
   // Calculate match stats based on answers
   useEffect(() => {
     let projects = 15;
     let mentors = 8;
-
     if (formData.mainProblem) {
       projects += 10;
       mentors += 2;
@@ -93,10 +117,11 @@ const Welcome = () => {
       projects += 5;
       mentors += 2;
     }
-
-    setMatchStats({ projects, mentors });
+    setMatchStats({
+      projects,
+      mentors
+    });
   }, [formData]);
-
   const handleNext = () => {
     if (currentStep === 0) {
       handleLogin();
@@ -106,7 +131,6 @@ const Welcome = () => {
       handleSubmit();
     }
   };
-
   const handleLogin = () => {
     // Simple validation for demo
     if (isLoginMode) {
@@ -121,13 +145,11 @@ const Welcome = () => {
       }
     }
   };
-
   const handlePrev = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
   };
-
   const handleSubmit = () => {
     localStorage.setItem('applicationData', JSON.stringify(formData));
     // Add loading animation
@@ -136,32 +158,31 @@ const Welcome = () => {
       navigate('/recommendations');
     }, 3000);
   };
-
   const [isLoading, setIsLoading] = useState(false);
-
   const canProceed = () => {
     switch (currentStep) {
-      case 0: 
+      case 0:
         if (isLoginMode) {
           return loginData.email !== "" && loginData.password !== "";
         } else {
-          return loginData.email !== "" && loginData.password !== "" && 
-                 loginData.confirmPassword !== "" && loginData.name !== "" && 
-                 loginData.password === loginData.confirmPassword;
+          return loginData.email !== "" && loginData.password !== "" && loginData.confirmPassword !== "" && loginData.name !== "" && loginData.password === loginData.confirmPassword;
         }
-      case 1: return formData.mainProblem !== "";
-      case 2: return formData.multipleCountries !== "" && formData.scholarshipInterested !== "";
-      case 3: return formData.field !== "";
-      case 4: return formData.hasTarget !== "";
-      default: return false;
+      case 1:
+        return formData.mainProblem !== "";
+      case 2:
+        return formData.multipleCountries !== "" && formData.scholarshipInterested !== "";
+      case 3:
+        return formData.field !== "";
+      case 4:
+        return formData.hasTarget !== "";
+      default:
+        return false;
     }
   };
-
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
-        return (
-          <Card className="shadow-soft border-0">
+        return <Card className="shadow-soft border-0">
             <CardHeader>
               <CardTitle className="text-xl flex items-center">
                 <User className="w-6 h-6 mr-3 text-primary" />
@@ -172,73 +193,48 @@ const Welcome = () => {
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              {!isLoginMode && (
-                <div>
+              {!isLoginMode && <div>
                   <Label htmlFor="name">姓名</Label>
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="请输入您的姓名"
-                    value={loginData.name}
-                    onChange={(e) => setLoginData(prev => ({ ...prev, name: e.target.value }))}
-                  />
-                </div>
-              )}
+                  <Input id="name" type="text" placeholder="请输入您的姓名" value={loginData.name} onChange={e => setLoginData(prev => ({
+                ...prev,
+                name: e.target.value
+              }))} />
+                </div>}
               
               <div>
                 <Label htmlFor="email">邮箱</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="请输入您的邮箱"
-                  value={loginData.email}
-                  onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
-                />
+                <Input id="email" type="email" placeholder="请输入您的邮箱" value={loginData.email} onChange={e => setLoginData(prev => ({
+                ...prev,
+                email: e.target.value
+              }))} />
               </div>
 
               <div>
                 <Label htmlFor="password">密码</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="请输入密码"
-                  value={loginData.password}
-                  onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
-                />
+                <Input id="password" type="password" placeholder="请输入密码" value={loginData.password} onChange={e => setLoginData(prev => ({
+                ...prev,
+                password: e.target.value
+              }))} />
               </div>
 
-              {!isLoginMode && (
-                <div>
+              {!isLoginMode && <div>
                   <Label htmlFor="confirmPassword">确认密码</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="请再次输入密码"
-                    value={loginData.confirmPassword}
-                    onChange={(e) => setLoginData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                  />
-                  {loginData.password !== loginData.confirmPassword && loginData.confirmPassword && (
-                    <p className="text-sm text-destructive mt-1">密码不匹配</p>
-                  )}
-                </div>
-              )}
+                  <Input id="confirmPassword" type="password" placeholder="请再次输入密码" value={loginData.confirmPassword} onChange={e => setLoginData(prev => ({
+                ...prev,
+                confirmPassword: e.target.value
+              }))} />
+                  {loginData.password !== loginData.confirmPassword && loginData.confirmPassword && <p className="text-sm text-destructive mt-1">密码不匹配</p>}
+                </div>}
 
               <div className="flex justify-center">
-                <Button 
-                  variant="link" 
-                  onClick={() => setIsLoginMode(!isLoginMode)}
-                  className="text-primary"
-                >
+                <Button variant="link" onClick={() => setIsLoginMode(!isLoginMode)} className="text-primary">
                   {isLoginMode ? "还没有账号？立即注册" : "已有账号？立即登录"}
                 </Button>
               </div>
             </CardContent>
-          </Card>
-        );
-
+          </Card>;
       case 1:
-        return (
-          <Card className="shadow-soft border-0">
+        return <Card className="shadow-soft border-0">
             <CardHeader>
               <CardTitle className="text-xl flex items-center">
                 <Sparkles className="w-6 h-6 mr-3 text-primary" />
@@ -247,13 +243,12 @@ const Welcome = () => {
               <p className="text-muted-foreground">告诉我们你的主要困扰，我们会为你匹配最合适的解决方案</p>
             </CardHeader>
             <CardContent>
-              <RadioGroup 
-                value={formData.mainProblem} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, mainProblem: value }))}
-              >
+              <RadioGroup value={formData.mainProblem} onValueChange={value => setFormData(prev => ({
+              ...prev,
+              mainProblem: value
+            }))}>
                 <div className="space-y-4">
-                  {mainProblems.map((problem) => (
-                    <div key={problem.id} className="p-4 rounded-lg hover:bg-accent transition-colors">
+                  {mainProblems.map(problem => <div key={problem.id} className="p-4 rounded-lg hover:bg-accent transition-colors">
                       <div className="flex items-start space-x-3">
                         <RadioGroupItem value={problem.id} id={problem.id} className="mt-1" />
                         <div className="flex-1">
@@ -263,17 +258,13 @@ const Welcome = () => {
                           <p className="text-sm text-muted-foreground mt-1">{problem.description}</p>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </RadioGroup>
             </CardContent>
-          </Card>
-        );
-
+          </Card>;
       case 2:
-        return (
-          <Card className="shadow-soft border-0">
+        return <Card className="shadow-soft border-0">
             <CardHeader>
               <CardTitle className="text-xl flex items-center">
                 <Target className="w-6 h-6 mr-3 text-primary" />
@@ -285,10 +276,10 @@ const Welcome = () => {
               {/* Multiple Countries */}
               <div>
                 <Label className="text-base font-medium mb-3 block">是否考虑多个国家？</Label>
-                <RadioGroup 
-                  value={formData.multipleCountries} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, multipleCountries: value }))}
-                >
+                <RadioGroup value={formData.multipleCountries} onValueChange={value => setFormData(prev => ({
+                ...prev,
+                multipleCountries: value
+              }))}>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
                       <RadioGroupItem value="yes" id="multi-yes" />
@@ -305,10 +296,10 @@ const Welcome = () => {
               {/* Scholarship Interest */}
               <div>
                 <Label className="text-base font-medium mb-3 block">是否考虑奖学金路径？</Label>
-                <RadioGroup 
-                  value={formData.scholarshipInterested} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, scholarshipInterested: value }))}
-                >
+                <RadioGroup value={formData.scholarshipInterested} onValueChange={value => setFormData(prev => ({
+                ...prev,
+                scholarshipInterested: value
+              }))}>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
                       <RadioGroupItem value="yes" id="scholarship-yes" />
@@ -322,12 +313,9 @@ const Welcome = () => {
                 </RadioGroup>
               </div>
             </CardContent>
-          </Card>
-        );
-
+          </Card>;
       case 3:
-        return (
-          <Card className="shadow-soft border-0">
+        return <Card className="shadow-soft border-0">
             <CardHeader>
               <CardTitle className="text-xl flex items-center">
                 <Users className="w-6 h-6 mr-3 text-primary" />
@@ -336,13 +324,12 @@ const Welcome = () => {
               <p className="text-muted-foreground">选择你感兴趣的专业方向</p>
             </CardHeader>
             <CardContent>
-              <RadioGroup 
-                value={formData.field} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, field: value }))}
-              >
+              <RadioGroup value={formData.field} onValueChange={value => setFormData(prev => ({
+              ...prev,
+              field: value
+            }))}>
                 <div className="space-y-4">
-                  {fields.map((field) => (
-                    <div key={field.id} className="p-4 rounded-lg hover:bg-accent transition-colors">
+                  {fields.map(field => <div key={field.id} className="p-4 rounded-lg hover:bg-accent transition-colors">
                       <div className="flex items-start space-x-3">
                         <RadioGroupItem value={field.id} id={field.id} className="mt-1" />
                         <div className="flex-1">
@@ -352,17 +339,13 @@ const Welcome = () => {
                           <p className="text-sm text-muted-foreground mt-1">{field.examples}</p>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </RadioGroup>
             </CardContent>
-          </Card>
-        );
-
+          </Card>;
       case 4:
-        return (
-          <Card className="shadow-soft border-0">
+        return <Card className="shadow-soft border-0">
             <CardHeader>
               <CardTitle className="text-xl">补充信息（可选）</CardTitle>
               <p className="text-muted-foreground">这些信息将帮助我们为你提供更个性化的服务</p>
@@ -371,10 +354,10 @@ const Welcome = () => {
               {/* Target Program */}
               <div>
                 <Label className="text-base font-medium mb-3 block">是否已有目标项目？</Label>
-                <RadioGroup 
-                  value={formData.hasTarget} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, hasTarget: value }))}
-                >
+                <RadioGroup value={formData.hasTarget} onValueChange={value => setFormData(prev => ({
+                ...prev,
+                hasTarget: value
+              }))}>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
                       <RadioGroupItem value="yes" id="target-yes" />
@@ -391,25 +374,22 @@ const Welcome = () => {
                   </div>
                 </RadioGroup>
 
-                {formData.hasTarget === "yes" && (
-                  <div className="mt-4 space-y-3">
+                {formData.hasTarget === "yes" && <div className="mt-4 space-y-3">
                     <Label>项目详情</Label>
-                    <Textarea
-                      placeholder="请简单描述你的目标项目，如学校名称、专业等..."
-                      value={formData.targetDetails}
-                      onChange={(e) => setFormData(prev => ({ ...prev, targetDetails: e.target.value }))}
-                    />
-                  </div>
-                )}
+                    <Textarea placeholder="请简单描述你的目标项目，如学校名称、专业等..." value={formData.targetDetails} onChange={e => setFormData(prev => ({
+                  ...prev,
+                  targetDetails: e.target.value
+                }))} />
+                  </div>}
               </div>
 
               {/* Resume */}
               <div>
                 <Label className="text-base font-medium mb-3 block">是否已有简历？</Label>
-                <RadioGroup 
-                  value={formData.hasResume} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, hasResume: value }))}
-                >
+                <RadioGroup value={formData.hasResume} onValueChange={value => setFormData(prev => ({
+                ...prev,
+                hasResume: value
+              }))}>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
                       <RadioGroupItem value="yes" id="resume-yes" />
@@ -430,10 +410,10 @@ const Welcome = () => {
               {/* Recommender */}
               <div>
                 <Label className="text-base font-medium mb-3 block">是否已有推荐人？</Label>
-                <RadioGroup 
-                  value={formData.hasRecommender} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, hasRecommender: value }))}
-                >
+                <RadioGroup value={formData.hasRecommender} onValueChange={value => setFormData(prev => ({
+                ...prev,
+                hasRecommender: value
+              }))}>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
                       <RadioGroupItem value="yes" id="recommender-yes" />
@@ -451,9 +431,7 @@ const Welcome = () => {
                 </RadioGroup>
               </div>
             </CardContent>
-          </Card>
-        );
-
+          </Card>;
       default:
         return null;
     }
@@ -461,8 +439,7 @@ const Welcome = () => {
 
   // Loading state component
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
+    return <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
         <Card className="shadow-soft border-0 p-8 text-center">
           <div className="w-16 h-16 bg-gradient-primary rounded-2xl mx-auto mb-6 flex items-center justify-center animate-pulse">
             <span className="text-2xl font-bold text-primary-foreground">P+</span>
@@ -478,12 +455,9 @@ const Welcome = () => {
             <span className="text-primary">• 生成专属路径</span>
           </div>
         </Card>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen bg-gradient-soft">
+  return <div className="min-h-screen bg-gradient-soft">
       <PageHeader showHomeButton={true} showProfileButtons={false} />
       <div className="container max-w-4xl mx-auto px-4 py-8">
         <div className="flex">
@@ -506,10 +480,10 @@ const Welcome = () => {
                     第 {currentStep + 1} 步，共 {totalSteps} 步
                   </span>
                   <span className="text-sm text-muted-foreground">
-                    {Math.round(((currentStep + 1) / totalSteps) * 100)}% 完成
+                    {Math.round((currentStep + 1) / totalSteps * 100)}% 完成
                   </span>
                 </div>
-                <Progress value={((currentStep + 1) / totalSteps) * 100} className="h-2" />
+                <Progress value={(currentStep + 1) / totalSteps * 100} className="h-2" />
               </CardContent>
             </Card>
 
@@ -518,23 +492,13 @@ const Welcome = () => {
 
             {/* Navigation */}
             <div className="flex justify-between mt-8">
-              <Button 
-                variant="outline" 
-                onClick={handlePrev}
-                disabled={currentStep === 0}
-                className="rounded-xl"
-              >
+              <Button variant="outline" onClick={handlePrev} disabled={currentStep === 0} className="rounded-xl">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 上一步
               </Button>
               
-              <Button 
-                onClick={handleNext}
-                disabled={!canProceed()}
-                className="rounded-xl px-8"
-              >
-                {currentStep === 0 ? (isLoginMode ? '登录' : '注册') : 
-                 currentStep === totalSteps - 1 ? '查看推荐路径' : '下一步'}
+              <Button onClick={handleNext} disabled={!canProceed()} className="rounded-xl px-8">
+                {currentStep === 0 ? isLoginMode ? '登录' : '注册' : currentStep === totalSteps - 1 ? '查看推荐路径' : '下一步'}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
@@ -553,13 +517,15 @@ const Welcome = () => {
                 <CardContent>
                   <div className="text-center space-y-4">
                     <div className="p-4 bg-primary-light rounded-xl">
-                      <div className="text-3xl font-bold text-primary mb-1">{matchStats.projects}</div>
-                      <p className="text-sm text-primary-dark">个匹配项目</p>
+                      
+                      <p className="text-sm text-primary-dark">？
+个匹配项目</p>
                     </div>
                     
                     <div className="p-4 bg-success/10 rounded-xl">
-                      <div className="text-3xl font-bold text-success mb-1">{matchStats.mentors}</div>
-                      <p className="text-sm text-success">位专业导师</p>
+                      
+                      <p className="text-sm text-success">？
+位专业导师</p>
                     </div>
 
                     <div className="p-3 bg-accent rounded-lg">
@@ -589,8 +555,6 @@ const Welcome = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Welcome;
