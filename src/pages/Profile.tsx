@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PageHeader } from "@/components/ui/page-header";
 import { ArrowLeft, Download, FileText, Calendar, Award, TrendingUp, Share } from "lucide-react";
 import studentAvatar from "@/assets/student-avatar.jpg";
 
@@ -159,13 +160,11 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-soft">
+      <PageHeader />
       <div className="container max-w-4xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
-            <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="mr-4">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
             <h1 className="text-xl font-bold text-foreground">成长档案</h1>
           </div>
           <div className="flex space-x-2">

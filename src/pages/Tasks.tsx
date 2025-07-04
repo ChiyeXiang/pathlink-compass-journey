@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PageHeader } from "@/components/ui/page-header";
 import { ArrowLeft, Upload, Download, FileText, Clock, CheckCircle, Play, Pause, Calendar, User, HelpCircle, Coffee, Archive } from "lucide-react";
 import mentorLiAvatar from "@/assets/mentor-li.jpg";
 
@@ -120,18 +121,13 @@ const Tasks = () => {
 
   return (
     <div className="min-h-screen bg-gradient-soft">
+      <PageHeader />
       <div className="container max-w-4xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
-            <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="mr-4">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
             <h1 className="text-xl font-bold text-foreground">任务管理</h1>
           </div>
-          <Button onClick={() => navigate('/profile')} variant="outline" size="sm">
-            成长档案
-          </Button>
         </div>
 
         {/* Tabs */}

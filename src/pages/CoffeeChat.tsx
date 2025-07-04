@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { PageHeader } from "@/components/ui/page-header";
 import { ArrowLeft, Clock, Calendar as CalendarIcon, Gift, CheckCircle } from "lucide-react";
 import mentorLiAvatar from "@/assets/mentor-li.jpg";
 
@@ -53,12 +54,10 @@ const CoffeeChat = () => {
 
   return (
     <div className="min-h-screen bg-gradient-soft">
+      <PageHeader />
       <div className="container max-w-2xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex items-center mb-6">
-          <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="mr-4">
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
           <h1 className="text-xl font-bold text-foreground">预约CoffeeChat</h1>
         </div>
 

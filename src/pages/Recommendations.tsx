@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { PageHeader } from "@/components/ui/page-header";
 import { ArrowRight, CheckCircle, Calendar, Star, Award } from "lucide-react";
 import mentorLiAvatar from "@/assets/mentor-li.jpg";
 import mentorWangAvatar from "@/assets/mentor-wang.jpg";
@@ -79,6 +80,7 @@ const Recommendations = () => {
 
   return (
     <div className="min-h-screen bg-gradient-soft">
+      <PageHeader />
       <div className="container max-w-4xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="text-center mb-6">
