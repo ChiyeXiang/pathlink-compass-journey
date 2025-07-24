@@ -4,12 +4,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowRight, Calendar, Clock, CheckCircle, Play, Users, Target, Sparkles } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ArrowRight, Calendar, Clock, CheckCircle, Play, Users, Target, Sparkles, User, Lock } from "lucide-react";
 import mentorLiAvatar from "@/assets/mentor-li.jpg";
 import mentorWangAvatar from "@/assets/mentor-wang.jpg";
 import mentorZhangAvatar from "@/assets/mentor-zhang.jpg";
 const Index = () => {
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoginMode, setIsLoginMode] = useState(true);
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    name: ""
+  });
   const executionPath = [{
     id: 1,
     title: "选校策略",
@@ -79,7 +89,32 @@ const Index = () => {
     dueDate: "8月10日",
     progress: 33
   };
-  return <div className="min-h-screen bg-gradient-soft">
+
+  const handleLogin = () => {
+    // Simple validation for demo
+    if (isLoginMode) {
+      if (loginData.email && loginData.password) {
+        setIsLoggedIn(true);
+        navigate('/mentor-marketplace');
+      }
+    } else {
+      if (loginData.email && loginData.password && loginData.confirmPassword && loginData.name) {
+        setIsLoggedIn(true);
+        navigate('/welcome');
+      }
+    }
+  };
+
+  const canProceed = () => {
+    if (isLoginMode) {
+      return loginData.email !== "" && loginData.password !== "";
+    } else {
+      return loginData.email !== "" && loginData.password !== "" && loginData.confirmPassword !== "" && loginData.name !== "" && loginData.password === loginData.confirmPassword;
+    }
+  };
+
+  if (isLoggedIn) {
+    return <div className="min-h-screen bg-gradient-soft">
       <div className="container max-w-6xl mx-auto px-4 py-8">
         {/* Hero Section */}
         <div className="text-center mb-12">
@@ -256,5 +291,106 @@ const Index = () => {
         </div>
       </div>
     </div>;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-soft">
+      <div className="container max-w-6xl mx-auto px-4 py-8">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <div className="w-20 h-20 bg-gradient-primary rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-medium">
+            <span className="text-3xl font-bold text-primary-foreground">P+</span>
+          </div>
+          <h1 className="text-4xl font-bold text-foreground mb-4">PathLink Apply+</h1>
+          <p className="text-xl text-primary font-semibold mb-6">不只是推荐服务，而是为你找到最合适的引路人</p>
+        </div>
+
+        {/* Login/Register Section */}
+        <div className="max-w-md mx-auto">
+          <Card className="shadow-soft border-0">
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center justify-center">
+                <User className="w-6 h-6 mr-3 text-primary" />
+                {isLoginMode ? "学生登录" : "学生注册"}
+              </CardTitle>
+              <p className="text-muted-foreground text-center">
+                {isLoginMode ? "登录您的账号开始智能申请之旅" : "创建账号，开启您的申请之路"}
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {!isLoginMode && (
+                <div>
+                  <Label htmlFor="name">姓名</Label>
+                  <Input 
+                    id="name" 
+                    type="text" 
+                    placeholder="请输入您的姓名" 
+                    value={loginData.name}
+                    onChange={(e) => setLoginData(prev => ({ ...prev, name: e.target.value }))}
+                  />
+                </div>
+              )}
+              
+              <div>
+                <Label htmlFor="email">邮箱</Label>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="请输入您的邮箱" 
+                  value={loginData.email}
+                  onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="password">密码</Label>
+                <Input 
+                  id="password" 
+                  type="password" 
+                  placeholder="请输入密码" 
+                  value={loginData.password}
+                  onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
+                />
+              </div>
+
+              {!isLoginMode && (
+                <div>
+                  <Label htmlFor="confirmPassword">确认密码</Label>
+                  <Input 
+                    id="confirmPassword" 
+                    type="password" 
+                    placeholder="请再次输入密码" 
+                    value={loginData.confirmPassword}
+                    onChange={(e) => setLoginData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  />
+                  {loginData.password !== loginData.confirmPassword && loginData.confirmPassword && (
+                    <p className="text-sm text-destructive mt-1">密码不匹配</p>
+                  )}
+                </div>
+              )}
+
+              <Button 
+                className="w-full" 
+                onClick={handleLogin}
+                disabled={!canProceed()}
+              >
+                {isLoginMode ? "登录" : "注册"}
+              </Button>
+
+              <div className="flex justify-center">
+                <Button 
+                  variant="link" 
+                  onClick={() => setIsLoginMode(!isLoginMode)} 
+                  className="text-primary"
+                >
+                  {isLoginMode ? "还没有账号？立即注册" : "已有账号？立即登录"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
 };
 export default Index;

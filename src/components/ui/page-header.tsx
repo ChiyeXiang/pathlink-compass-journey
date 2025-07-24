@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Home, User, FileText } from "lucide-react";
+import { Home, User, FileText, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface PageHeaderProps {
@@ -31,6 +31,15 @@ export const PageHeader = ({
 
       {showProfileButtons && (
         <div className="flex items-center space-x-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => navigate("/cart")}
+            className="flex items-center space-x-2"
+          >
+            <ShoppingCart className="w-4 h-4" />
+            <span>购物车</span>
+          </Button>
           <Button 
             variant="outline" 
             size="sm" 

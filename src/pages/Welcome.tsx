@@ -26,15 +26,7 @@ interface MatchStats {
 }
 const Welcome = () => {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(0); // Start with login/register step
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoginMode, setIsLoginMode] = useState(true);
-  const [loginData, setLoginData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    name: ""
-  });
+  const [currentStep, setCurrentStep] = useState(1); // Start with questionnaire step
   const [formData, setFormData] = useState<FormData>({
     mainProblem: "",
     multipleCountries: "",
@@ -95,7 +87,7 @@ const Welcome = () => {
     label: "法学",
     examples: "JD、LLM等"
   }];
-  const totalSteps = 5; // Including login step
+  const totalSteps = 4; // Questionnaire steps only
 
   // Calculate match stats based on answers
   useEffect(() => {
@@ -123,26 +115,10 @@ const Welcome = () => {
     });
   }, [formData]);
   const handleNext = () => {
-    if (currentStep === 0) {
-      handleLogin();
-    } else if (currentStep < totalSteps) {
+    if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     } else {
       handleSubmit();
-    }
-  };
-  const handleLogin = () => {
-    // Simple validation for demo
-    if (isLoginMode) {
-      if (loginData.email && loginData.password) {
-        setIsLoggedIn(true);
-        setCurrentStep(1);
-      }
-    } else {
-      if (loginData.email && loginData.password && loginData.confirmPassword && loginData.name) {
-        setIsLoggedIn(true);
-        setCurrentStep(1);
-      }
     }
   };
   const handlePrev = () => {
@@ -155,18 +131,12 @@ const Welcome = () => {
     // Add loading animation
     setIsLoading(true);
     setTimeout(() => {
-      navigate('/recommendations');
+      navigate('/mentor-marketplace');
     }, 3000);
   };
   const [isLoading, setIsLoading] = useState(false);
   const canProceed = () => {
     switch (currentStep) {
-      case 0:
-        if (isLoginMode) {
-          return loginData.email !== "" && loginData.password !== "";
-        } else {
-          return loginData.email !== "" && loginData.password !== "" && loginData.confirmPassword !== "" && loginData.name !== "" && loginData.password === loginData.confirmPassword;
-        }
       case 1:
         return formData.mainProblem !== "";
       case 2:
@@ -181,58 +151,6 @@ const Welcome = () => {
   };
   const renderStepContent = () => {
     switch (currentStep) {
-      case 0:
-        return <Card className="shadow-soft border-0">
-            <CardHeader>
-              <CardTitle className="text-xl flex items-center">
-                <User className="w-6 h-6 mr-3 text-primary" />
-                {isLoginMode ? "学生登录" : "学生注册"}
-              </CardTitle>
-              <p className="text-muted-foreground">
-                {isLoginMode ? "登录您的账号开始智能申请之旅" : "创建账号，开启您的申请之路"}
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {!isLoginMode && <div>
-                  <Label htmlFor="name">姓名</Label>
-                  <Input id="name" type="text" placeholder="请输入您的姓名" value={loginData.name} onChange={e => setLoginData(prev => ({
-                ...prev,
-                name: e.target.value
-              }))} />
-                </div>}
-              
-              <div>
-                <Label htmlFor="email">邮箱</Label>
-                <Input id="email" type="email" placeholder="请输入您的邮箱" value={loginData.email} onChange={e => setLoginData(prev => ({
-                ...prev,
-                email: e.target.value
-              }))} />
-              </div>
-
-              <div>
-                <Label htmlFor="password">密码</Label>
-                <Input id="password" type="password" placeholder="请输入密码" value={loginData.password} onChange={e => setLoginData(prev => ({
-                ...prev,
-                password: e.target.value
-              }))} />
-              </div>
-
-              {!isLoginMode && <div>
-                  <Label htmlFor="confirmPassword">确认密码</Label>
-                  <Input id="confirmPassword" type="password" placeholder="请再次输入密码" value={loginData.confirmPassword} onChange={e => setLoginData(prev => ({
-                ...prev,
-                confirmPassword: e.target.value
-              }))} />
-                  {loginData.password !== loginData.confirmPassword && loginData.confirmPassword && <p className="text-sm text-destructive mt-1">密码不匹配</p>}
-                </div>}
-
-              <div className="flex justify-center">
-                <Button variant="link" onClick={() => setIsLoginMode(!isLoginMode)} className="text-primary">
-                  {isLoginMode ? "还没有账号？立即注册" : "已有账号？立即登录"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>;
       case 1:
         return <Card className="shadow-soft border-0">
             <CardHeader>
@@ -498,7 +416,7 @@ const Welcome = () => {
               </Button>
               
               <Button onClick={handleNext} disabled={!canProceed()} className="rounded-xl px-8">
-                {currentStep === 0 ? isLoginMode ? '登录' : '注册' : currentStep === totalSteps - 1 ? '查看推荐路径' : '下一步'}
+                {currentStep === totalSteps ? '查看推荐路径' : '下一步'}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
