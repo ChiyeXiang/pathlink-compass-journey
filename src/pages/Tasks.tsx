@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/ui/page-header";
@@ -123,10 +124,38 @@ const Tasks = () => {
     <div className="min-h-screen bg-gradient-soft">
       <PageHeader />
       <div className="container max-w-4xl mx-auto px-4 py-6">
+        {/* User Profile Section */}
+        <Card className="mb-6 shadow-soft border-0">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <Avatar className="w-16 h-16">
+                <AvatarImage src="/assets/student-avatar.jpg" alt="张同学" />
+                <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+                  张
+                </AvatarFallback>
+              </Avatar>
+              
+              <div className="flex-1">
+                <h2 className="text-xl font-bold text-foreground mb-1">张同学</h2>
+                <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-2">
+                  <span>账号ID: STU2024001</span>
+                  <span>•</span>
+                  <span>目标: 美国商科硕士</span>
+                </div>
+                <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                  <span>注册时间: 2024-01-10</span>
+                  <span>•</span>
+                  <span>服务状态: 进行中</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
-            <h1 className="text-xl font-bold text-foreground">任务管理</h1>
+            <h1 className="text-xl font-bold text-foreground">个人中心</h1>
           </div>
         </div>
 

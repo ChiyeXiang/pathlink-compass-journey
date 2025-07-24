@@ -299,16 +299,45 @@ const MentorDetail = () => {
           </TabsContent>
         </Tabs>
 
-        {/* Purchase Button */}
-        <div className="mt-8">
-          <Button 
-            className="w-full h-14 text-lg"
-            onClick={handlePurchase}
-            disabled={!selectedService}
-          >
-            <DollarSign className="w-5 h-5 mr-2" />
-            立即购买服务
-          </Button>
+        {/* Purchase Buttons */}
+        <div className="mt-8 space-y-3">
+          <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+            <span>包含 4 次1对1服务</span>
+            <span className="text-success">立省 ¥400</span>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-3">
+            <Button 
+              variant="outline"
+              className="h-14 text-lg border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+              onClick={() => {
+                if (!selectedService) return;
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                cart.push({
+                  id: selectedService,
+                  type: 'service',
+                  name: selectedService,
+                  price: 1299,
+                  mentor: '李导师'
+                });
+                localStorage.setItem('cart', JSON.stringify(cart));
+                navigate('/cart');
+              }}
+              disabled={!selectedService}
+            >
+              <DollarSign className="w-5 h-5 mr-2" />
+              加入购物车
+            </Button>
+            
+            <Button 
+              className="h-14 text-lg"
+              onClick={handlePurchase}
+              disabled={!selectedService}
+            >
+              <DollarSign className="w-5 h-5 mr-2" />
+              立即购买服务
+            </Button>
+          </div>
         </div>
       </div>
     </div>

@@ -188,7 +188,11 @@ const MentorMarketplace = () => {
 
                   {/* Hover Details */}
                   {hoveredMentor === step.id && (
-                    <div className="absolute top-full left-0 right-0 z-10 mt-2">
+                    <div 
+                      className="absolute top-full left-0 right-0 z-10 mt-2"
+                      onMouseEnter={() => setHoveredMentor(step.id)}
+                      onMouseLeave={() => setHoveredMentor(null)}
+                    >
                       <Card className="shadow-medium border-0 bg-white">
                         <CardContent className="p-4">
                           <div className="flex items-start space-x-3 mb-4">

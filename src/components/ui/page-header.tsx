@@ -43,20 +43,11 @@ export const PageHeader = ({
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={() => navigate("/profile")}
-            className="flex items-center space-x-2"
-          >
-            <User className="w-4 h-4" />
-            <span>成长档案</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
             onClick={() => navigate("/tasks")}
             className="flex items-center space-x-2"
           >
             <FileText className="w-4 h-4" />
-            <span>任务中心</span>
+            <span>个人中心</span>
           </Button>
         </div>
       )}
