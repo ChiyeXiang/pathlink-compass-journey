@@ -267,17 +267,7 @@ const Profile = () => {
                         </div>
                         
                         {/* Reusability Information */}
-                        <div className="flex items-center justify-between p-2 bg-success/10 rounded border border-success/20">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-xs text-success font-medium">🔄 可复用</span>
-                            <span className="text-xs text-muted-foreground">
-                              用于奖学金/交换/研究生申请
-                            </span>
-                          </div>
-                          <Badge variant="outline" className="text-xs border-success text-success">
-                            剩余 {item.reusableCount} 次调取
-                          </Badge>
-                        </div>
+                        <></>
                       </div>
                     ))}
                   </div>

@@ -38,7 +38,7 @@ const Tasks = () => {
         { phase: "执行", status: "current", date: "2024-01-18" },
         { phase: "交付", status: "pending", date: "2024-01-22" }
       ],
-      nextAction: "请预约导师 30 分钟复盘 Meeting",
+      nextAction: "",
       dueDate: "2024-01-22",
       reusabilityNote: "该阶段成果会作为档案长期留存，未来可用于研究生申请/奖学金/交换，免费调取 5 次"
     },
@@ -65,7 +65,7 @@ const Tasks = () => {
         { phase: "执行", status: "pending", date: "2024-01-28" },
         { phase: "交付", status: "pending", date: "2024-02-10" }
       ],
-      nextAction: "等待选校任务完成后开始",
+      nextAction: "",
       dueDate: "2024-02-10",
       reusabilityNote: "文书成果可复用于多个申请项目，支持长期保存和调取"
     }
@@ -207,18 +207,14 @@ const Tasks = () => {
                     <div className="flex flex-col items-end space-y-2">
                       <div className="flex items-center space-x-2">
                         {task.hasMeetingNote && (
-                          <Badge variant="outline" className="text-xs border-success text-success">
-                            Meeting Note ✓
-                          </Badge>
+                          <></>
                         )}
                         {task.version && (
-                          <Badge variant="outline" className="text-xs border-primary text-primary">
-                            {task.version}
-                          </Badge>
+                          <></>
                         )}
                       </div>
                       <Badge className="text-xs bg-accent-foreground text-accent">
-                        已留痕 • 可跨奖学金使用
+                        {/* 已留痕 • 可跨奖学金使用 */}
                       </Badge>
                     </div>
                   </div>
@@ -226,10 +222,10 @@ const Tasks = () => {
                   {/* Progress */}
                   <div>
                     <div className="flex justify-between text-sm mb-2">
-                      <span>整体进度</span>
-                      <span>{task.progress}%</span>
+                      {/* <span>整体进度</span>
+                      <span>{task.progress}%</span> */}
                     </div>
-                    <Progress value={task.progress} className="h-2" />
+                    {/* <Progress value={task.progress} className="h-2" /> */}
                   </div>
 
                   {/* Timeline */}
@@ -258,8 +254,8 @@ const Tasks = () => {
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="font-semibold">交付成果</h4>
                       <div className="flex items-center space-x-1">
-                        <HelpCircle className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-xs text-muted-foreground">可验证 • 可复用</span>
+                        {/* <HelpCircle className="w-4 h-4 text-muted-foreground" /> */}
+                        {/* <span className="text-xs text-muted-foreground">可验证 • 可复用</span> */}
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -273,16 +269,11 @@ const Tasks = () => {
                               <div className="flex items-center space-x-2">
                                 <span className="text-sm font-medium">{deliverable.name}</span>
                                 {deliverable.version && (
-                                  <Badge variant="outline" className="text-xs">
-                                    {deliverable.version}
-                                  </Badge>
+                                  <></>
                                 )}
                               </div>
                               {deliverable.reusable && (
-                                <div className="flex items-center space-x-1 mt-1">
-                                  <Archive className="w-3 h-3 text-success" />
-                                  <span className="text-xs text-success">可跨奖学金使用</span>
-                                </div>
+                                <></>
                               )}
                             </div>
                           </div>
@@ -320,7 +311,7 @@ const Tasks = () => {
                     </div>
                   </div>
 
-                  {/* Actions */}
+                  {/* Actions
                   <div className="flex space-x-2">
                     <Button variant="outline" size="sm" className="flex-1">
                       <FileText className="w-4 h-4 mr-2" />
@@ -330,7 +321,7 @@ const Tasks = () => {
                       <Calendar className="w-4 h-4 mr-2" />
                       联系导师
                     </Button>
-                  </div>
+                  </div> */}
                 </CardContent>
               </Card>
             ))}
