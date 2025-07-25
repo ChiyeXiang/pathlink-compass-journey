@@ -197,9 +197,8 @@ const MentorDetail = () => {
 
         {/* Services */}
         <Tabs defaultValue="single" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-1">
             <TabsTrigger value="single">单项服务</TabsTrigger>
-            <TabsTrigger value="packages">套餐服务</TabsTrigger>
           </TabsList>
 
           <TabsContent value="single" className="space-y-4 mt-6">
@@ -250,53 +249,6 @@ const MentorDetail = () => {
             ))}
           </TabsContent>
 
-          <TabsContent value="packages" className="space-y-4 mt-6">
-            {packages.map((pkg) => (
-              <Card 
-                key={pkg.id} 
-                className={`shadow-soft border-0 cursor-pointer transition-all duration-200 ${
-                  selectedService === pkg.id ? 'ring-2 ring-primary' : 'hover:shadow-medium'
-                }`}
-                onClick={() => handleServiceSelect(pkg.id)}
-              >
-                <CardContent className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center">
-                      <h3 className="text-lg font-bold text-foreground mr-3">{pkg.name}</h3>
-                      <Badge className="bg-primary text-primary-foreground">{pkg.badge}</Badge>
-                    </div>
-                    <div className="text-right">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-muted-foreground line-through">¥{pkg.originalPrice}</span>
-                        <span className="text-2xl font-bold text-primary">¥{pkg.price}</span>
-                      </div>
-                      <span className="text-sm text-success">立省 ¥{pkg.savings}</span>
-                    </div>
-                  </div>
-
-                  <p className="text-muted-foreground mb-4">{pkg.description}</p>
-
-                  <div className="mb-4">
-                    <h4 className="font-semibold text-foreground mb-2">包含服务：</h4>
-                    <div className="space-y-1">
-                      {pkg.includes.map((item, index) => (
-                        <div key={index} className="flex items-center text-sm text-muted-foreground">
-                          <CheckCircle className="w-4 h-4 mr-2 text-success" />
-                          {item}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="p-3 bg-accent rounded-lg">
-                    <p className="text-sm text-accent-foreground">
-                      <strong>适用人群：</strong>{pkg.suitable}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </TabsContent>
         </Tabs>
 
         {/* Purchase Buttons */}
@@ -321,7 +273,9 @@ const MentorDetail = () => {
                   mentor: '李导师'
                 });
                 localStorage.setItem('cart', JSON.stringify(cart));
-                navigate('/cart');
+                // Show success message and don't navigate
+                const event = new CustomEvent('cartAdded');
+                window.dispatchEvent(event);
               }}
               disabled={!selectedService}
             >

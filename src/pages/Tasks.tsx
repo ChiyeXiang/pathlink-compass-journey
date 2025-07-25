@@ -308,22 +308,6 @@ const Tasks = () => {
                     </div>
                   </div>
 
-                  {/* CoffeeChat Status */}
-                  <div className="p-3 bg-warning/10 rounded-lg border border-warning/20">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center space-x-2">
-                        <Coffee className="w-4 h-4 text-warning" />
-                        <span className="text-sm font-semibold text-warning">CoffeeChat 剩余次数</span>
-                      </div>
-                      <Badge className="bg-warning text-warning-foreground">
-                        {task.coffeeChatRemaining} 次
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      每个阶段包含专业 CoffeeChat 服务，可随时预约导师答疑
-                    </p>
-                  </div>
-
                   {/* Next Action */}
                   <div className="flex items-center justify-between p-4 bg-primary-light rounded-lg">
                     <div>
@@ -333,16 +317,6 @@ const Tasks = () => {
                     <div className="text-right">
                       <p className="text-xs text-muted-foreground">预计交付</p>
                       <p className="text-sm font-semibold text-foreground">{task.dueDate}</p>
-                    </div>
-                  </div>
-
-                  {/* Reusability Note */}
-                  <div className="p-3 bg-accent rounded-lg border border-accent">
-                    <div className="flex items-start space-x-2">
-                      <HelpCircle className="w-4 h-4 text-accent-foreground mt-0.5 flex-shrink-0" />
-                      <p className="text-xs text-accent-foreground">
-                        {task.reusabilityNote}
-                      </p>
                     </div>
                   </div>
 

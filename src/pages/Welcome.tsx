@@ -395,13 +395,13 @@ const Welcome = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm font-medium text-foreground">
-                    第 {currentStep + 1} 步，共 {totalSteps} 步
+                    第 {currentStep} 步，共 {totalSteps} 步
                   </span>
                   <span className="text-sm text-muted-foreground">
-                    {Math.round((currentStep + 1) / totalSteps * 100)}% 完成
+                    {Math.round(currentStep / totalSteps * 100)}% 完成
                   </span>
                 </div>
-                <Progress value={(currentStep + 1) / totalSteps * 100} className="h-2" />
+                <Progress value={currentStep / totalSteps * 100} className="h-2" />
               </CardContent>
             </Card>
 

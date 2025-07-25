@@ -38,7 +38,7 @@ const BookingSuccess = () => {
   return (
     <div className="min-h-screen bg-gradient-soft">
       <PageHeader />
-      <div className="container max-w-2xl mx-auto px-4 py-6 flex items-center justify-center min-h-[calc(100vh-80px)]">
+      <div className="container max-w-2xl mx-auto px-4 py-6">
         {/* Success Icon */}
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-success rounded-full mx-auto mb-4 flex items-center justify-center">

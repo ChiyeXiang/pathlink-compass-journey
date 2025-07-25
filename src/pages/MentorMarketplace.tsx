@@ -189,7 +189,7 @@ const MentorMarketplace = () => {
                   {/* Hover Details */}
                   {hoveredMentor === step.id && (
                     <div 
-                      className="absolute top-full left-0 right-0 z-10 mt-2"
+                      className="absolute top-full left-0 right-0 z-20 mt-2 pointer-events-auto"
                       onMouseEnter={() => setHoveredMentor(step.id)}
                       onMouseLeave={() => setHoveredMentor(null)}
                     >
