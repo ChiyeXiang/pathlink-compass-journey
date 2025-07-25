@@ -199,9 +199,7 @@ const Tasks = () => {
                       <div>
                         <p className="text-sm font-semibold text-accent-foreground">执行负责人</p>
                         <p className="text-sm text-foreground">{task.mentor}</p>
-                        <Button variant="ghost" size="sm" className="h-6 px-2 mt-1 text-xs">
-                          联系导师
-                        </Button>
+                    
                       </div>
                     </div>
                     <div className="flex flex-col items-end space-y-2">
@@ -213,9 +211,6 @@ const Tasks = () => {
                           <></>
                         )}
                       </div>
-                      <Badge className="text-xs bg-accent-foreground text-accent">
-                        {/* 已留痕 • 可跨奖学金使用 */}
-                      </Badge>
                     </div>
                   </div>
 
@@ -253,10 +248,6 @@ const Tasks = () => {
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="font-semibold">交付成果</h4>
-                      <div className="flex items-center space-x-1">
-                        {/* <HelpCircle className="w-4 h-4 text-muted-foreground" /> */}
-                        {/* <span className="text-xs text-muted-foreground">可验证 • 可复用</span> */}
-                      </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {task.deliverables.map((deliverable, index) => (
