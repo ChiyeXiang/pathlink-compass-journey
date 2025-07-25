@@ -148,7 +148,7 @@ const MentorMarketplace = () => {
               {executionPath.map((step, index) => (
                 <div key={step.id} className="relative">
                   <Card 
-                    className="shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-300 transform hover:-translate-y-2"
+                    className="shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-300 transform hover:-translate-y-2 min-h-[360px]"
                     onMouseEnter={() => setHoveredMentor(step.id)}
                     onMouseLeave={() => setHoveredMentor(null)}
                   >
@@ -189,7 +189,7 @@ const MentorMarketplace = () => {
                   {/* Hover Details */}
                   {hoveredMentor === step.id && (
                     <div 
-                      className="absolute top-full left-0 right-0 z-20 mt-2 pointer-events-auto"
+                      className="absolute top-full left-0 right-0 z-20 mt-0 pointer-events-auto"
                       onMouseEnter={() => setHoveredMentor(step.id)}
                       onMouseLeave={() => setHoveredMentor(null)}
                     >

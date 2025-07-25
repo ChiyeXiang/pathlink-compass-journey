@@ -39,36 +39,6 @@ const MentorDetail = () => {
       price: 1299,
       originalPrice: 1599,
       sessions: 1
-    },
-    {
-      id: "essay-writing", 
-      name: "核心文书共创",
-      description: "1对1文书指导，挖掘个人亮点，打造compelling故事",
-      deliverables: ["Personal Statement初稿", "Essay结构优化", "语言润色", "无限次修改"],
-      duration: "1-2周",
-      price: 2599,
-      originalPrice: 3199,
-      sessions: 3
-    },
-    {
-      id: "recommendation",
-      name: "推荐信策略设计", 
-      description: "推荐人选择建议和推荐信内容规划",
-      deliverables: ["推荐人匹配方案", "推荐信大纲", "模板和话术", "跟进指导"],
-      duration: "3-5天",
-      price: 899,
-      originalPrice: 1099,
-      sessions: 1
-    },
-    {
-      id: "interview-prep",
-      name: "面试技巧训练",
-      description: "专业面试技巧培训和实战模拟练习", 
-      deliverables: ["面试技巧培训", "常见问题解析", "3次模拟面试", "反馈报告"],
-      duration: "1周",
-      price: 1899,
-      originalPrice: 2299,
-      sessions: 4
     }
   ];
 
