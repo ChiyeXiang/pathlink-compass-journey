@@ -1,0 +1,17 @@
+[
+  {
+    "name": "小明",
+    "email": "1234567@qq.com",
+    "password": "123456"
+  },
+  {
+    "name": "小王",
+    "email": "54321@qq.com",
+    "password": "123456"
+  },
+  {
+    "name": "小吴",
+    "email": "1943489335@qq.com",
+    "password": "1234567"
+  }
+]
