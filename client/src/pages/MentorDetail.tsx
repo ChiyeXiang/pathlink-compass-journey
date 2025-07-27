@@ -39,36 +39,6 @@ const MentorDetail = () => {
       price: 1299,
       originalPrice: 1599,
       sessions: 1
-    },
-    {
-      id: "essay-writing", 
-      name: "核心文书共创",
-      description: "1对1文书指导，挖掘个人亮点，打造compelling故事",
-      deliverables: ["Personal Statement初稿", "Essay结构优化", "语言润色", "无限次修改"],
-      duration: "1-2周",
-      price: 2599,
-      originalPrice: 3199,
-      sessions: 3
-    },
-    {
-      id: "recommendation",
-      name: "推荐信策略设计", 
-      description: "推荐人选择建议和推荐信内容规划",
-      deliverables: ["推荐人匹配方案", "推荐信大纲", "模板和话术", "跟进指导"],
-      duration: "3-5天",
-      price: 899,
-      originalPrice: 1099,
-      sessions: 1
-    },
-    {
-      id: "interview-prep",
-      name: "面试技巧训练",
-      description: "专业面试技巧培训和实战模拟练习", 
-      deliverables: ["面试技巧培训", "常见问题解析", "3次模拟面试", "反馈报告"],
-      duration: "1周",
-      price: 1899,
-      originalPrice: 2299,
-      sessions: 4
     }
   ];
 
@@ -197,9 +167,8 @@ const MentorDetail = () => {
 
         {/* Services */}
         <Tabs defaultValue="single" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-1">
             <TabsTrigger value="single">单项服务</TabsTrigger>
-            <TabsTrigger value="packages">套餐服务</TabsTrigger>
           </TabsList>
 
           <TabsContent value="single" className="space-y-4 mt-6">
@@ -250,53 +219,6 @@ const MentorDetail = () => {
             ))}
           </TabsContent>
 
-          <TabsContent value="packages" className="space-y-4 mt-6">
-            {packages.map((pkg) => (
-              <Card 
-                key={pkg.id} 
-                className={`shadow-soft border-0 cursor-pointer transition-all duration-200 ${
-                  selectedService === pkg.id ? 'ring-2 ring-primary' : 'hover:shadow-medium'
-                }`}
-                onClick={() => handleServiceSelect(pkg.id)}
-              >
-                <CardContent className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center">
-                      <h3 className="text-lg font-bold text-foreground mr-3">{pkg.name}</h3>
-                      <Badge className="bg-primary text-primary-foreground">{pkg.badge}</Badge>
-                    </div>
-                    <div className="text-right">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-muted-foreground line-through">¥{pkg.originalPrice}</span>
-                        <span className="text-2xl font-bold text-primary">¥{pkg.price}</span>
-                      </div>
-                      <span className="text-sm text-success">立省 ¥{pkg.savings}</span>
-                    </div>
-                  </div>
-
-                  <p className="text-muted-foreground mb-4">{pkg.description}</p>
-
-                  <div className="mb-4">
-                    <h4 className="font-semibold text-foreground mb-2">包含服务：</h4>
-                    <div className="space-y-1">
-                      {pkg.includes.map((item, index) => (
-                        <div key={index} className="flex items-center text-sm text-muted-foreground">
-                          <CheckCircle className="w-4 h-4 mr-2 text-success" />
-                          {item}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="p-3 bg-accent rounded-lg">
-                    <p className="text-sm text-accent-foreground">
-                      <strong>适用人群：</strong>{pkg.suitable}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </TabsContent>
         </Tabs>
 
         {/* Purchase Buttons */}
@@ -321,7 +243,9 @@ const MentorDetail = () => {
                   mentor: '李导师'
                 });
                 localStorage.setItem('cart', JSON.stringify(cart));
-                navigate('/cart');
+                // Show success message and don't navigate
+                const event = new CustomEvent('cartAdded');
+                window.dispatchEvent(event);
               }}
               disabled={!selectedService}
             >
