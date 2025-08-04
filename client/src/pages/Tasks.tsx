@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +13,7 @@ import mentorLiAvatar from "@/assets/mentor-li.jpg";
 const Tasks = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("current");
+  const [student, setStudent] = useState<any>(null);
 
   const currentTasks = [
     {
@@ -120,6 +121,30 @@ const Tasks = () => {
     }
   };
 
+
+  useEffect(() => {
+  const fetchStudent = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const response = await fetch('/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error('无法获取学生信息');
+      const data = await response.json();
+      setStudent(data); // ✅ 改为 student
+    } catch (error) {
+      console.error('获取学生信息失败：', error);
+    }
+  };
+
+  fetchStudent();
+}, []);
+
+
+
+
   return (
     <div className="min-h-screen bg-gradient-soft">
       <PageHeader />
@@ -136,14 +161,14 @@ const Tasks = () => {
               </Avatar>
               
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-foreground mb-1">张同学</h2>
+                <h2 className="text-xl font-bold text-foreground mb-1">{student?.name || '加载中...'}</h2>
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-2">
-                  <span>账号ID: STU2024001</span>
+                  <span>账号ID: {student?.userId || 'STU000000'}</span>
                   <span>•</span>
                   <span>目标: 美国商科硕士</span>
                 </div>
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                  <span>注册时间: 2024-01-10</span>
+                  <span>注册时间: {student?.createdAt?.slice(0, 10)}</span>
                   <span>•</span>
                   <span>服务状态: 进行中</span>
                 </div>

@@ -27,6 +27,14 @@ const Index = () => {
     code: ""
   });
 
+  // 页面加载时检查 token 是否存在
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
 
   const executionPath = [{
     id: 1,
@@ -98,24 +106,6 @@ const Index = () => {
     progress: 33
   };
 
-  // test connection
-  //   useEffect(() => {
-  //   const testBackendConnection = async () => {
-  //     try {
-  //       const res = await fetch('/api/auth/test');
-  //       const data = await res.json();
-  //       console.log('后端连接测试结果:', data);
-  //       alert(data.message); // 也可以用 alert 直接查看
-  //     } catch (err) {
-  //       console.error('后端连接失败', err);
-  //       alert('后端连接失败');
-  //     }
-  //   };
-
-
-  //   testBackendConnection();
-  // }, []);
-
 
   const handleLogin = async () => {
     // Simple validation for demo
@@ -138,6 +128,9 @@ const Index = () => {
           if (!res.ok) {
             alert(data.message || '登录失败');
           } else {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('student', JSON.stringify(data.student));
+
             setIsLoggedIn(true);
             navigate('/mentor-marketplace');
           }
@@ -166,6 +159,9 @@ const Index = () => {
           const data = await res.json();
 
           if (res.ok) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('student', JSON.stringify(data.student));
+
             alert('注册成功：' + data.message);
             setIsLoggedIn(true);
             navigate('/welcome');
