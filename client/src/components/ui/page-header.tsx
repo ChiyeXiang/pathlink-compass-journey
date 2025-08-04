@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Home, User, FileText, ShoppingCart, ArrowLeft } from "lucide-react";
+import { Home, User, FileText, ShoppingCart, ArrowLeft, LogOut } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface PageHeaderProps {
@@ -17,6 +17,12 @@ export const PageHeader = ({
   const [showCartNotification, setShowCartNotification] = useState(false);
   
   const isHomePage = location.pathname === '/' || location.pathname === '/index';
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('student');
+    navigate('/');
+  };
 
   useEffect(() => {
     const handleCartAdded = () => {
@@ -82,6 +88,15 @@ export const PageHeader = ({
           >
             <FileText className="w-4 h-4" />
             <span>个人中心</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleLogout}
+            className="flex items-center space-x-2 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>退出登录</span>
           </Button>
         </div>
       )}
