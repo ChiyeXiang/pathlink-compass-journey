@@ -13,6 +13,7 @@ import mentorZhangAvatar from "@/assets/mentor-zhang.jpg";
 const MentorMarketplace = () => {
   const navigate = useNavigate();
   const [hoveredMentor, setHoveredMentor] = useState<string | null>(null);
+  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const executionPath = [
     {
@@ -113,6 +114,21 @@ const MentorMarketplace = () => {
     navigate('/mentor-detail', { state: { mentorId } });
   };
 
+  const handleMouseEnter = (stepId: string) => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+      setHoverTimeout(null);
+    }
+    setHoveredMentor(stepId);
+  };
+
+  const handleMouseLeave = () => {
+    const timeout = setTimeout(() => {
+      setHoveredMentor(null);
+    }, 150); // 150ms delay
+    setHoverTimeout(timeout);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'current': return 'bg-primary text-primary-foreground';
@@ -144,35 +160,40 @@ const MentorMarketplace = () => {
             {/* Path Line */}
             <div className="absolute top-12 left-12 right-12 h-0.5 bg-border hidden md:block"></div>
             
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative items-stretch">
               {executionPath.map((step, index) => (
-                <div key={step.id} className="relative">
+                <div 
+                  key={step.id} 
+                  className="relative group"
+                  onMouseEnter={() => handleMouseEnter(step.id)}
+                  onMouseLeave={handleMouseLeave}
+                >
                   <Card 
-                    className="shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-300 transform hover:-translate-y-2"
-                    onMouseEnter={() => setHoveredMentor(step.id)}
-                    onMouseLeave={() => setHoveredMentor(null)}
+                    className="shadow-soft border-0 cursor-pointer hover:shadow-medium transition-all duration-300 transform hover:-translate-y-2 h-full"
                   >
-                    <CardContent className="p-6 text-center">
-                      {/* Step Number */}
-                      <div className="w-12 h-12 bg-primary rounded-full mx-auto mb-4 flex items-center justify-center text-primary-foreground font-bold text-lg shadow-medium">
-                        {index + 1}
-                      </div>
-                      
-                      <h4 className="font-bold text-foreground mb-2">{step.title}</h4>
-                      <p className="text-sm text-muted-foreground mb-3">{step.description}</p>
-                      
-                      <div className="flex items-center justify-center space-x-2 mb-3">
-                        <Avatar className="w-8 h-8">
-                          <AvatarImage src={step.mentor.avatar} alt={step.mentor.name} />
-                          <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                            {step.mentor.name.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="text-left">
-                          <p className="text-sm font-semibold">{step.mentor.name}</p>
-                          <div className="flex items-center">
-                            <Star className="w-3 h-3 text-warning mr-1" fill="currentColor" />
-                            <span className="text-xs">{step.mentor.rating}</span>
+                    <CardContent className="p-6 text-center h-full flex flex-col justify-between">
+                      <div>
+                        {/* Step Number */}
+                        <div className="w-12 h-12 bg-primary rounded-full mx-auto mb-4 flex items-center justify-center text-primary-foreground font-bold text-lg shadow-medium">
+                          {index + 1}
+                        </div>
+                        
+                        <h4 className="font-bold text-foreground mb-2">{step.title}</h4>
+                        <p className="text-sm text-muted-foreground mb-3">{step.description}</p>
+                        
+                        <div className="flex items-center justify-center space-x-2 mb-3">
+                          <Avatar className="w-8 h-8">
+                            <AvatarImage src={step.mentor.avatar} alt={step.mentor.name} />
+                            <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                              {step.mentor.name.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="text-left">
+                            <p className="text-sm font-semibold">{step.mentor.name}</p>
+                            <div className="flex items-center">
+                              <Star className="w-3 h-3 text-warning mr-1" fill="currentColor" />
+                              <span className="text-xs">{step.mentor.rating}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -189,9 +210,10 @@ const MentorMarketplace = () => {
                   {/* Hover Details */}
                   {hoveredMentor === step.id && (
                     <div 
-                      className="absolute top-full left-0 right-0 z-10 mt-2"
-                      onMouseEnter={() => setHoveredMentor(step.id)}
-                      onMouseLeave={() => setHoveredMentor(null)}
+                      className="absolute top-full left-0 right-0 z-10 mt-0"
+                      style={{ pointerEvents: 'auto' }}
+                      onMouseEnter={() => handleMouseEnter(step.id)}
+                      onMouseLeave={handleMouseLeave}
                     >
                       <Card className="shadow-medium border-0 bg-white">
                         <CardContent className="p-4">

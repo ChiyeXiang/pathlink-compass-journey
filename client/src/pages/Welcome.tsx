@@ -11,14 +11,13 @@ import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
 import { ArrowRight, ArrowLeft, Sparkles, Target, Users, User, Lock } from "lucide-react";
 interface FormData {
-  mainProblem: string;
-  multipleCountries: string;
-  scholarshipInterested: string;
-  field: string;
-  hasTarget: string;
+  AppDegree: string[];
+  multipleCountries: string[];
+  scholarshipInterested: string[];
+  field: string[];
+  DreamCountrySchool: string[];
   targetDetails: string;
-  hasResume: string;
-  hasRecommender: string;
+  budgetPreference: string[];
 }
 interface MatchStats {
   projects: number;
@@ -28,84 +27,67 @@ const Welcome = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1); // Start with questionnaire step
   const [formData, setFormData] = useState<FormData>({
-    mainProblem: "",
-    multipleCountries: "",
-    scholarshipInterested: "",
-    field: "",
-    hasTarget: "",
+    AppDegree: [],
+    multipleCountries: [],
+    scholarshipInterested: [],
+    field: [],
+    DreamCountrySchool: [],
     targetDetails: "",
-    hasResume: "",
-    hasRecommender: ""
+    budgetPreference: []
   });
   const [matchStats, setMatchStats] = useState<MatchStats>({
     projects: 0,
     mentors: 0
   });
-  const mainProblems = [{
+  const AppDegrees = [{
     id: "no-direction",
-    label: "没有明确方向",
-    description: "还不确定具体想申请什么"
+    label: "本科项目"
   }, {
     id: "find-programs",
-    label: "想找合适项目",
-    description: "需要帮助选择具体项目"
+    label: "研究生项目",
   }, {
     id: "school-selection",
-    label: "不确定选校",
-    description: "已有方向但需要选校建议"
+    label: "博士项目",
   }, {
     id: "scholarship",
-    label: "想拿奖学金",
-    description: "希望获得奖学金支持"
-  }, {
-    id: "essay-help",
-    label: "文书不会写",
-    description: "文书写作遇到困难"
+    label: "MBA项目"
   }];
   const fields = [{
     id: "business",
     label: "商科",
-    examples: "MBA、金融、会计等"
+    examples: "工商管理、金融、会计、市场营销、战略管理、供应链管理、商业分析、人力资源管理、创业学等"
   }, {
     id: "engineering",
     label: "理工科",
-    examples: "CS、EE、机械等"
+    examples: "计算机科学、数据科学、人工智能、统计学、数学、电子工程、机械工程、土木工程、材料科学、化学、化工、物理、生物技术、环境科学和信息系统等"
   }, {
     id: "social",
     label: "社会科学",
-    examples: "经济、政治、心理等"
+    examples: "经济学、社会学、心理学、政治学、国际关系、公共政策、教育学、人类学、传播学和城市规划等"
   }, {
     id: "arts",
     label: "人文艺术",
-    examples: "设计、文学、历史等"
-  }, {
-    id: "medicine",
-    label: "医学",
-    examples: "临床、公卫、生物等"
-  }, {
-    id: "law",
-    label: "法学",
-    examples: "JD、LLM等"
+    examples: "哲学、历史、文学、语言学、戏剧与表演、视觉艺术、艺术史、摄影、电影研究、各类设计专业（如用户体验、产品设计、工业设计）以及音乐与音乐学等"
   }];
-  const totalSteps = 4; // Questionnaire steps only
+  const totalSteps = 5; // Questionnaire steps only
 
   // Calculate match stats based on answers
   useEffect(() => {
     let projects = 15;
     let mentors = 8;
-    if (formData.mainProblem) {
+    if (formData.AppDegree.length > 0) {
       projects += 10;
       mentors += 2;
     }
-    if (formData.field) {
+    if (formData.field.length > 0) {
       projects += 20;
       mentors += 5;
     }
-    if (formData.multipleCountries === "yes") {
+    if (formData.multipleCountries.length > 0) {
       projects += 15;
       mentors += 3;
     }
-    if (formData.scholarshipInterested === "yes") {
+    if (formData.scholarshipInterested.length > 0) {
       projects += 5;
       mentors += 2;
     }
@@ -138,13 +120,15 @@ const Welcome = () => {
   const canProceed = () => {
     switch (currentStep) {
       case 1:
-        return formData.mainProblem !== "";
+        return formData.AppDegree.length > 0;
       case 2:
-        return formData.multipleCountries !== "" && formData.scholarshipInterested !== "";
+        return formData.field.length > 0;
       case 3:
-        return formData.field !== "";
+        return formData.DreamCountrySchool.length > 0;
       case 4:
-        return formData.hasTarget !== "";
+        return formData.multipleCountries.length > 0;
+      case 5:
+        return formData.budgetPreference.length > 0;
       default:
         return false;
     }
@@ -156,197 +140,355 @@ const Welcome = () => {
             <CardHeader>
               <CardTitle className="text-xl flex items-center">
                 <Sparkles className="w-6 h-6 mr-3 text-primary" />
-                你最想解决的问题是？
+                选择你正在准备申请的学位👇（可多选）
               </CardTitle>
-              <p className="text-muted-foreground">告诉我们你的主要困扰，我们会为你匹配最合适的解决方案</p>
+              <p className="text-muted-foreground"> </p>
             </CardHeader>
             <CardContent>
-              <RadioGroup value={formData.mainProblem} onValueChange={value => setFormData(prev => ({
-              ...prev,
-              mainProblem: value
-            }))}>
-                <div className="space-y-4">
-                  {mainProblems.map(problem => <div key={problem.id} className="p-4 rounded-lg hover:bg-accent transition-colors">
-                      <div className="flex items-start space-x-3">
-                        <RadioGroupItem value={problem.id} id={problem.id} className="mt-1" />
-                        <div className="flex-1">
-                          <Label htmlFor={problem.id} className="text-base font-medium cursor-pointer">
-                            {problem.label}
-                          </Label>
-                          <p className="text-sm text-muted-foreground mt-1">{problem.description}</p>
-                        </div>
+              <div className="space-y-4">
+                {AppDegrees.map(problem => <div key={problem.id} className="p-4 rounded-lg hover:bg-accent transition-colors">
+                    <div className="flex items-start space-x-3">
+                      <Checkbox 
+                        id={problem.id} 
+                        checked={formData.AppDegree.includes(problem.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setFormData(prev => ({
+                              ...prev,
+                              AppDegree: [...prev.AppDegree, problem.id]
+                            }));
+                          } else {
+                            setFormData(prev => ({
+                              ...prev,
+                              AppDegree: prev.AppDegree.filter(item => item !== problem.id)
+                            }));
+                          }
+                        }}
+                        className="mt-1" 
+                      />
+                      <div className="flex-1">
+                        <Label htmlFor={problem.id} className="text-base font-medium cursor-pointer">
+                          {problem.label}
+                        </Label>
                       </div>
-                    </div>)}
-                </div>
-              </RadioGroup>
+                    </div>
+                  </div>)}
+              </div>
             </CardContent>
           </Card>;
       case 2:
         return <Card className="shadow-soft border-0">
             <CardHeader>
               <CardTitle className="text-xl flex items-center">
-                <Target className="w-6 h-6 mr-3 text-primary" />
-                申请偏好设置
+                <Users className="w-6 h-6 mr-3 text-primary" />
+                有没有感兴趣的专业方向？*（可多选）
               </CardTitle>
-              <p className="text-muted-foreground">了解你的申请偏好，为你提供更精准的建议</p>
+              <p className="text-muted-foreground"> （MBA申请跳过此题） </p>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Multiple Countries */}
-              <div>
-                <Label className="text-base font-medium mb-3 block">是否考虑多个国家？</Label>
-                <RadioGroup value={formData.multipleCountries} onValueChange={value => setFormData(prev => ({
-                ...prev,
-                multipleCountries: value
-              }))}>
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                      <RadioGroupItem value="yes" id="multi-yes" />
-                      <Label htmlFor="multi-yes" className="cursor-pointer">是，希望申请多个国家</Label>
+            <CardContent>
+              <div className="space-y-4">
+                {fields.map(field => <div key={field.id} className="p-4 rounded-lg hover:bg-accent transition-colors">
+                    <div className="flex items-start space-x-3">
+                      <Checkbox 
+                        id={field.id} 
+                        checked={formData.field.includes(field.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setFormData(prev => ({
+                              ...prev,
+                              field: [...prev.field, field.id]
+                            }));
+                          } else {
+                            setFormData(prev => ({
+                              ...prev,
+                              field: prev.field.filter(item => item !== field.id)
+                            }));
+                          }
+                        }}
+                        className="mt-1" 
+                      />
+                      <div className="flex-1">
+                        <Label htmlFor={field.id} className="text-base font-medium cursor-pointer">
+                          {field.label}
+                        </Label>
+                        <p className="text-sm text-muted-foreground mt-1">{field.examples}</p>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                      <RadioGroupItem value="no" id="multi-no" />
-                      <Label htmlFor="multi-no" className="cursor-pointer">否，专注单一国家</Label>
-                    </div>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              {/* Scholarship Interest */}
-              <div>
-                <Label className="text-base font-medium mb-3 block">是否考虑奖学金路径？</Label>
-                <RadioGroup value={formData.scholarshipInterested} onValueChange={value => setFormData(prev => ({
-                ...prev,
-                scholarshipInterested: value
-              }))}>
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                      <RadioGroupItem value="yes" id="scholarship-yes" />
-                      <Label htmlFor="scholarship-yes" className="cursor-pointer">是，希望获得奖学金支持</Label>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                      <RadioGroupItem value="no" id="scholarship-no" />
-                      <Label htmlFor="scholarship-no" className="cursor-pointer">否，主要关注录取</Label>
-                    </div>
-                  </div>
-                </RadioGroup>
+                  </div>)}
               </div>
             </CardContent>
           </Card>;
       case 3:
         return <Card className="shadow-soft border-0">
             <CardHeader>
-              <CardTitle className="text-xl flex items-center">
-                <Users className="w-6 h-6 mr-3 text-primary" />
-                大致专业领域
-              </CardTitle>
-              <p className="text-muted-foreground">选择你感兴趣的专业方向</p>
+              <CardTitle className="text-xl">有没有想去的国家/地区？（可多选）</CardTitle>
+              <p className="text-muted-foreground"> </p>
             </CardHeader>
-            <CardContent>
-              <RadioGroup value={formData.field} onValueChange={value => setFormData(prev => ({
-              ...prev,
-              field: value
-            }))}>
-                <div className="space-y-4">
-                  {fields.map(field => <div key={field.id} className="p-4 rounded-lg hover:bg-accent transition-colors">
-                      <div className="flex items-start space-x-3">
-                        <RadioGroupItem value={field.id} id={field.id} className="mt-1" />
-                        <div className="flex-1">
-                          <Label htmlFor={field.id} className="text-base font-medium cursor-pointer">
-                            {field.label}
-                          </Label>
-                          <p className="text-sm text-muted-foreground mt-1">{field.examples}</p>
-                        </div>
-                      </div>
-                    </div>)}
+            <CardContent className="space-y-6">
+              {/* Target Program */}
+              <div>
+                <Label className="text-base font-medium mb-3 block">国家/地区？</Label>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                    <Checkbox 
+                      id="target-yes" 
+                      checked={formData.DreamCountrySchool.includes("yes")}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setFormData(prev => ({
+                            ...prev,
+                            DreamCountrySchool: [...prev.DreamCountrySchool, "yes"]
+                          }));
+                        } else {
+                          setFormData(prev => ({
+                            ...prev,
+                            DreamCountrySchool: prev.DreamCountrySchool.filter(item => item !== "yes")
+                          }));
+                        }
+                      }}
+                    />
+                    <Label htmlFor="target-yes" className="cursor-pointer">美国/加拿大</Label>
+                  </div>
+                  <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                    <Checkbox 
+                      id="target-partial" 
+                      checked={formData.DreamCountrySchool.includes("partial")}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setFormData(prev => ({
+                            ...prev,
+                            DreamCountrySchool: [...prev.DreamCountrySchool, "partial"]
+                          }));
+                        } else {
+                          setFormData(prev => ({
+                            ...prev,
+                            DreamCountrySchool: prev.DreamCountrySchool.filter(item => item !== "partial")
+                          }));
+                        }
+                      }}
+                    />
+                    <Label htmlFor="target-partial" className="cursor-pointer">英国/澳洲/欧洲</Label>
+                  </div>
+                  <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                    <Checkbox 
+                      id="target-no" 
+                      checked={formData.DreamCountrySchool.includes("no")}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setFormData(prev => ({
+                            ...prev,
+                            DreamCountrySchool: [...prev.DreamCountrySchool, "no"]
+                          }));
+                        } else {
+                          setFormData(prev => ({
+                            ...prev,
+                            DreamCountrySchool: prev.DreamCountrySchool.filter(item => item !== "no")
+                          }));
+                        }
+                      }}
+                    />
+                    <Label htmlFor="target-no" className="cursor-pointer">香港/新加坡/亚洲其他地区</Label>
+                  </div>
                 </div>
-              </RadioGroup>
+
+                {(formData.DreamCountrySchool.includes("yes") || formData.DreamCountrySchool.includes("partial") || formData.DreamCountrySchool.includes("no")) && (
+                  <div className="mt-4 space-y-3">
+                    <Label> * 大胆说出你的梦校！</Label>
+                    <Label>为你推荐有相关成功案例的导师+该校校友导师～</Label>
+                    <Textarea placeholder="输入文字，AI自动分析关键词。
+示例（供参考）：我对牛津大学数学系/美国top30院校/大城市的学校...很感兴趣
+
+" value={formData.targetDetails} onChange={e => setFormData(prev => ({
+                      ...prev,
+                      targetDetails: e.target.value
+                    }))} />
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>;
       case 4:
         return <Card className="shadow-soft border-0">
             <CardHeader>
-              <CardTitle className="text-xl">补充信息（可选）</CardTitle>
-              <p className="text-muted-foreground">这些信息将帮助我们为你提供更个性化的服务</p>
+              <CardTitle className="text-xl flex items-center">
+                <Target className="w-6 h-6 mr-3 text-primary" />
+                你希望我们在哪些方面帮你出谋划策？
+              </CardTitle>
+              <p className="text-muted-foreground"> </p>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Target Program */}
-              <div>
-                <Label className="text-base font-medium mb-3 block">是否已有目标项目？</Label>
-                <RadioGroup value={formData.hasTarget} onValueChange={value => setFormData(prev => ({
-                ...prev,
-                hasTarget: value
-              }))}>
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                      <RadioGroupItem value="yes" id="target-yes" />
-                      <Label htmlFor="target-yes" className="cursor-pointer">是，已有明确目标</Label>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                      <RadioGroupItem value="partial" id="target-partial" />
-                      <Label htmlFor="target-partial" className="cursor-pointer">有一些想法，需要确认</Label>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                      <RadioGroupItem value="no" id="target-no" />
-                      <Label htmlFor="target-no" className="cursor-pointer">完全没有头绪</Label>
-                    </div>
-                  </div>
-                </RadioGroup>
-
-                {formData.hasTarget === "yes" && <div className="mt-4 space-y-3">
-                    <Label>项目详情</Label>
-                    <Textarea placeholder="请简单描述你的目标项目，如学校名称、专业等..." value={formData.targetDetails} onChange={e => setFormData(prev => ({
-                  ...prev,
-                  targetDetails: e.target.value
-                }))} />
-                  </div>}
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                  <Checkbox 
+                    id="strategy" 
+                    checked={formData.multipleCountries.includes("strategy")}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setFormData(prev => ({
+                          ...prev,
+                          multipleCountries: [...prev.multipleCountries, "strategy"]
+                        }));
+                      } else {
+                        setFormData(prev => ({
+                          ...prev,
+                          multipleCountries: prev.multipleCountries.filter(item => item !== "strategy")
+                        }));
+                      }
+                    }}
+                  />
+                  <Label htmlFor="strategy" className="cursor-pointer">整体申请策略怎么定？</Label>
+                </div>
+                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                  <Checkbox 
+                    id="essay" 
+                    checked={formData.multipleCountries.includes("essay")}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setFormData(prev => ({
+                          ...prev,
+                          multipleCountries: [...prev.multipleCountries, "essay"]
+                        }));
+                      } else {
+                        setFormData(prev => ({
+                          ...prev,
+                          multipleCountries: prev.multipleCountries.filter(item => item !== "essay")
+                        }));
+                      }
+                    }}
+                  />
+                  <Label htmlFor="essay" className="cursor-pointer">文书怎么写更打动人？</Label>
+                </div>
+                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                  <Checkbox 
+                    id="resume" 
+                    checked={formData.multipleCountries.includes("resume")}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setFormData(prev => ({
+                          ...prev,
+                          multipleCountries: [...prev.multipleCountries, "resume"]
+                        }));
+                      } else {
+                        setFormData(prev => ({
+                          ...prev,
+                          multipleCountries: prev.multipleCountries.filter(item => item !== "resume")
+                        }));
+                      }
+                    }}
+                  />
+                  <Label htmlFor="resume" className="cursor-pointer">简历怎么写更有亮点？</Label>
+                </div>
+                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                  <Checkbox 
+                    id="interview" 
+                    checked={formData.multipleCountries.includes("interview")}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setFormData(prev => ({
+                          ...prev,
+                          multipleCountries: [...prev.multipleCountries, "interview"]
+                        }));
+                      } else {
+                        setFormData(prev => ({
+                          ...prev,
+                          multipleCountries: prev.multipleCountries.filter(item => item !== "interview")
+                        }));
+                      }
+                    }}
+                  />
+                  <Label htmlFor="interview" className="cursor-pointer">面试怎么准备？</Label>
+                </div>
+                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                  <Checkbox 
+                    id="recommendation" 
+                    checked={formData.multipleCountries.includes("recommendation")}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setFormData(prev => ({
+                          ...prev,
+                          multipleCountries: [...prev.multipleCountries, "recommendation"]
+                        }));
+                      } else {
+                        setFormData(prev => ({
+                          ...prev,
+                          multipleCountries: prev.multipleCountries.filter(item => item !== "recommendation")
+                        }));
+                      }
+                    }}
+                  />
+                  <Label htmlFor="recommendation" className="cursor-pointer">推荐信怎么找/怎么准备？</Label>
+                </div>
               </div>
-
-              {/* Resume */}
-              <div>
-                <Label className="text-base font-medium mb-3 block">是否已有简历？</Label>
-                <RadioGroup value={formData.hasResume} onValueChange={value => setFormData(prev => ({
-                ...prev,
-                hasResume: value
-              }))}>
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                      <RadioGroupItem value="yes" id="resume-yes" />
-                      <Label htmlFor="resume-yes" className="cursor-pointer">有，且比较完整</Label>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                      <RadioGroupItem value="partial" id="resume-partial" />
-                      <Label htmlFor="resume-partial" className="cursor-pointer">有，但需要优化</Label>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                      <RadioGroupItem value="no" id="resume-no" />
-                      <Label htmlFor="resume-no" className="cursor-pointer">没有，需要从头制作</Label>
-                    </div>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              {/* Recommender */}
-              <div>
-                <Label className="text-base font-medium mb-3 block">是否已有推荐人？</Label>
-                <RadioGroup value={formData.hasRecommender} onValueChange={value => setFormData(prev => ({
-                ...prev,
-                hasRecommender: value
-              }))}>
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                      <RadioGroupItem value="yes" id="recommender-yes" />
-                      <Label htmlFor="recommender-yes" className="cursor-pointer">有，且已确认</Label>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                      <RadioGroupItem value="partial" id="recommender-partial" />
-                      <Label htmlFor="recommender-partial" className="cursor-pointer">有想法，需要确认</Label>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
-                      <RadioGroupItem value="no" id="recommender-no" />
-                      <Label htmlFor="recommender-no" className="cursor-pointer">没有，需要帮助</Label>
-                    </div>
-                  </div>
-                </RadioGroup>
+            </CardContent>
+          </Card>;
+      case 5:
+        return <Card className="shadow-soft border-0">
+            <CardHeader>
+              <CardTitle className="text-xl">我们了解下你的预算偏好～（可多选）</CardTitle>
+              <p className="text-muted-foreground">根据你的预算情况，为你推荐最合适的导师和服务方案</p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                  <Checkbox 
+                    id="budget-high" 
+                    checked={formData.budgetPreference.includes("high")}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setFormData(prev => ({
+                          ...prev,
+                          budgetPreference: [...prev.budgetPreference, "high"]
+                        }));
+                      } else {
+                        setFormData(prev => ({
+                          ...prev,
+                          budgetPreference: prev.budgetPreference.filter(item => item !== "high")
+                        }));
+                      }
+                    }}
+                  />
+                  <Label htmlFor="budget-high" className="cursor-pointer">预算较高：我愿意为靠谱导师多花一些</Label>
+                </div>
+                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                  <Checkbox 
+                    id="budget-medium" 
+                    checked={formData.budgetPreference.includes("medium")}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setFormData(prev => ({
+                          ...prev,
+                          budgetPreference: [...prev.budgetPreference, "medium"]
+                        }));
+                      } else {
+                        setFormData(prev => ({
+                          ...prev,
+                          budgetPreference: prev.budgetPreference.filter(item => item !== "medium")
+                        }));
+                      }
+                    }}
+                  />
+                  <Label htmlFor="budget-medium" className="cursor-pointer">中等预算：想找到性价比高的好导师</Label>
+                </div>
+                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors">
+                  <Checkbox 
+                    id="budget-low" 
+                    checked={formData.budgetPreference.includes("low")}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setFormData(prev => ({
+                          ...prev,
+                          budgetPreference: [...prev.budgetPreference, "low"]
+                        }));
+                      } else {
+                        setFormData(prev => ({
+                          ...prev,
+                          budgetPreference: prev.budgetPreference.filter(item => item !== "low")
+                        }));
+                      }
+                    }}
+                  />
+                  <Label htmlFor="budget-low" className="cursor-pointer">预算有限：希望在控制花费的同时也能提升</Label>
+                </div>
               </div>
             </CardContent>
           </Card>;
@@ -395,13 +537,13 @@ const Welcome = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm font-medium text-foreground">
-                    第 {currentStep + 1} 步，共 {totalSteps} 步
+                    第 {currentStep} 页，共 {totalSteps} 页
                   </span>
                   <span className="text-sm text-muted-foreground">
-                    {Math.round((currentStep + 1) / totalSteps * 100)}% 完成
+                    {Math.round(currentStep/ totalSteps * 100)}% 完成
                   </span>
                 </div>
-                <Progress value={(currentStep + 1) / totalSteps * 100} className="h-2" />
+                <Progress value={currentStep / totalSteps * 100} className="h-2" />
               </CardContent>
             </Card>
 
@@ -416,7 +558,7 @@ const Welcome = () => {
               </Button>
               
               <Button onClick={handleNext} disabled={!canProceed()} className="rounded-xl px-8">
-                {currentStep === totalSteps ? '查看推荐路径' : '下一步'}
+                {currentStep === totalSteps ? '查看推荐路径' : '下一页'}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>

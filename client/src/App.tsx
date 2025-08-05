@@ -16,6 +16,9 @@ import Cart from "./pages/Cart";
 import Payment from "./pages/Payment";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
+import MentorRegistration from "./pages/MentorRegistration";
+import ProfileSetup from "./pages/ProfileSetup";
+import MentorSetup from "./pages/MentorSetup";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +41,9 @@ const App = () => (
           <Route path="/cart" element={<Cart />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/mentor-registration" element={<MentorRegistration />} />
+          <Route path="/profile-setup" element={<ProfileSetup />} />
+          <Route path="/mentor-setup" element={<MentorSetup />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

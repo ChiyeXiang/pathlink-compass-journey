@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Home, User, FileText, ShoppingCart, ArrowLeft, LogOut } from "lucide-react";
+import { Home, User, FileText, ShoppingCart, ArrowLeft, LogOut, Settings, ChevronDown } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface PageHeaderProps {
@@ -15,6 +15,7 @@ export const PageHeader = ({
   const navigate = useNavigate();
   const location = useLocation();
   const [showCartNotification, setShowCartNotification] = useState(false);
+  const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
   
   const isHomePage = location.pathname === '/' || location.pathname === '/index';
 
@@ -33,6 +34,23 @@ export const PageHeader = ({
     window.addEventListener('cartAdded', handleCartAdded);
     return () => window.removeEventListener('cartAdded', handleCartAdded);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.settings-dropdown')) {
+        setShowSettingsDropdown(false);
+      }
+    };
+
+    if (showSettingsDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showSettingsDropdown]);
 
   return (
     <header className="flex items-center justify-between p-4 bg-background border-b border-border">
@@ -89,6 +107,48 @@ export const PageHeader = ({
             <FileText className="w-4 h-4" />
             <span>个人中心</span>
           </Button>
+          
+          {/* Settings Button with Dropdown */}
+          <div className="relative settings-dropdown">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowSettingsDropdown(!showSettingsDropdown)}
+              className="flex items-center space-x-2"
+            >
+              <Settings className="w-4 h-4" />
+              <span>设置</span>
+              <ChevronDown className={`w-4 h-4 transition-transform ${showSettingsDropdown ? 'rotate-180' : ''}`} />
+            </Button>
+            
+            {showSettingsDropdown && (
+              <div className="absolute top-full mt-2 right-0 bg-background border border-border rounded-lg shadow-lg z-50 min-w-[160px]">
+                <div className="py-1">
+                  <button
+                    onClick={() => {
+                      setShowSettingsDropdown(false);
+                      navigate("/profile-setup");
+                    }}
+                    className="w-full px-4 py-2 text-left hover:bg-accent transition-colors flex items-center space-x-2"
+                  >
+                    <User className="w-4 h-4" />
+                    <span>个人信息</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowSettingsDropdown(false);
+                      navigate("/mentor-setup");
+                    }}
+                    className="w-full px-4 py-2 text-left hover:bg-accent transition-colors flex items-center space-x-2"
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>切换到导师</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          
           <Button 
             variant="outline" 
             size="sm" 

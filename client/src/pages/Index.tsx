@@ -32,8 +32,10 @@ const Index = () => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
+      // 自动登录后直接跳转到导师市场页面
+      navigate('/mentor-marketplace');
     }
-  }, []);
+  }, [navigate]);
 
 
   const executionPath = [{
@@ -369,6 +371,17 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-soft">
       <div className="container max-w-6xl mx-auto px-4 py-8">
+        {/* Top Right Button */}
+        <div className="flex justify-end mb-8">
+          <Button 
+            variant="outline" 
+            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            onClick={() => navigate('/mentor-registration')}
+          >
+            成为导师
+          </Button>
+        </div>
+
         {/* Hero Section */}
         <div className="text-center mb-12">
           <div className="w-20 h-20 bg-gradient-primary rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-medium">
@@ -384,7 +397,7 @@ const Index = () => {
             <CardHeader>
               <CardTitle className="text-xl flex items-center justify-center">
                 <User className="w-6 h-6 mr-3 text-primary" />
-                {isLoginMode ? "学生登录" : "学生注册"}
+                {isLoginMode ? "用户登录" : "用户注册"}
               </CardTitle>
               <p className="text-muted-foreground text-center">
                 {isLoginMode ? "登录您的账号开始智能申请之旅" : "创建账号，开启您的申请之路"}
