@@ -19,6 +19,7 @@ import NotFound from "./pages/NotFound";
 import MentorRegistration from "./pages/MentorRegistration";
 import ProfileSetup from "./pages/ProfileSetup";
 import MentorSetup from "./pages/MentorSetup";
+import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
           <Route path="/mentor-registration" element={<MentorRegistration />} />
           <Route path="/profile-setup" element={<ProfileSetup />} />
           <Route path="/mentor-setup" element={<MentorSetup />} />
+          <Route path="/login" element={<Login />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
