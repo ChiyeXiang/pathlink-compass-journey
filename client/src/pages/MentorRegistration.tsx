@@ -311,7 +311,7 @@ const MentorRegistration = () => {
             <div>
               <h3 className="font-medium mb-4">Welcome</h3>
               <ul className="space-y-2 text-sm opacity-70">
-                <li><a href="#" className="hover:opacity-100">开始匹配</a></li>
+                <li><a href="#" className="hover:opacity-100" onClick={() => navigate('/register')}>开始匹配</a></li>
                 <li><a href="#" className="hover:opacity-100">登录</a></li>
                 <li><a href="#" className="hover:opacity-100">成为导师</a></li>
               </ul>

@@ -1,49 +1,19 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ReviewMarquee } from '../components/ReviewMarquee';
+import { PageHeader } from '@/components/ui/page-header';
 import './LelandLandingPage.css';
 
 const LelandLandingPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleLoginClick = () => {
-    navigate('/login');
-  };
-
   const handleJoinPathlinkClick = () => {
     navigate('/welcome');
   };
 
-  const handleMentorSquareClick = () => {
-    navigate('/mentor-square');
-  };
-
-  const handleBecomeMentorClick = () => {
-    navigate('/mentor-registration');
-  };
-
   return (
     <div className="leland-landing-page">
-      {/* Header */}
-      <header className="header">
-        <div className="header-container">
-          <div className="logo-section">
-            <img 
-              src="https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/20333cb4-3f98-418b-97b4-6084401c6291" 
-              alt="Pathlink Logo" 
-              className="logo"
-            />
-          </div>
-          <nav className="nav-menu">
-            <a href="#" className="nav-link" onClick={handleMentorSquareClick}>导师广场</a>
-            <a href="#" className="nav-link" onClick={handleBecomeMentorClick}>成为导师</a>
-            <div className="auth-buttons">
-              <button className="btn-login" onClick={handleLoginClick}>登录</button>
-              <button className="btn-get-started">开始匹配</button>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <PageHeader showHomeButton={false} />
 
       {/* Hero Section */}
       <section className="hero-section">
@@ -302,7 +272,7 @@ const LelandLandingPage: React.FC = () => {
           
           <div className="library-content">
             <h2>Access a library of videos, templates, and examples curated by Leland's top coaches.</h2>
-            <button className="get-started-btn">开始匹配 for free</button>
+            <button className="get-started-btn" onClick={() => navigate('/register')}>开始匹配 for free</button>
           </div>
           
           <div className="library-categories">

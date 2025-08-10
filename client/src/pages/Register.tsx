@@ -5,28 +5,36 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/ui/page-header";
 import { useAuth } from "@/contexts/AuthContext";
-import { User, Lock, ArrowRight } from "lucide-react";
+import { User, Lock, ArrowLeft, ArrowRight } from "lucide-react";
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
-  const [loginData, setLoginData] = useState({
+  const [registerData, setRegisterData] = useState({
+    name: "",
     email: "",
-    password: ""
+    password: "",
+    confirmPassword: "",
+    code: ""
   });
 
   // 如果用户已经登录，重定向到目标页面或默认页面
   const from = location.state?.from?.pathname || '/welcome';
 
   const canProceed = () => {
-    return loginData.email !== "" && loginData.password !== "";
+    return registerData.email !== "" && 
+           registerData.password !== "" && 
+           registerData.confirmPassword !== "" && 
+           registerData.name !== "" && 
+           registerData.password === registerData.confirmPassword && 
+           registerData.code !== "";
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (canProceed()) {
-      // 模拟登录成功
+      // 模拟注册成功
       const token = 'dummy-token';
       login(token);
       navigate(from);
@@ -39,28 +47,40 @@ const Login = () => {
 
       <div className="flex items-center justify-center min-h-screen p-8">
         <div className="w-full max-w-lg">
-          {/* Login Form */}
+          {/* Register Form */}
           <div className="space-y-8">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-gray-900 flex items-center justify-center mb-4">
                 <User className="w-8 h-8 mr-4 text-[#15b078]" />
-                用户登录
+                用户注册
               </h1>
               <p className="text-lg text-gray-600">
-                登录您的账号开始智能申请之旅
+                创建账号，开启您的申请之路
               </p>
             </div>
             
             <div className="space-y-6">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
+                  <Label htmlFor="name" className="text-base font-medium mb-2 block">姓名</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="请输入您的姓名"
+                    value={registerData.name}
+                    onChange={(e) => setRegisterData(prev => ({ ...prev, name: e.target.value }))}
+                    className="h-12 text-base"
+                  />
+                </div>
+
+                <div>
                   <Label htmlFor="email" className="text-base font-medium mb-2 block">邮箱</Label>
                   <Input
                     id="email"
                     type="email"
                     placeholder="请输入您的邮箱"
-                    value={loginData.email}
-                    onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
+                    value={registerData.email}
+                    onChange={(e) => setRegisterData(prev => ({ ...prev, email: e.target.value }))}
                     className="h-12 text-base"
                   />
                 </div>
@@ -71,8 +91,32 @@ const Login = () => {
                     id="password"
                     type="password"
                     placeholder="请输入密码"
-                    value={loginData.password}
-                    onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
+                    value={registerData.password}
+                    onChange={(e) => setRegisterData(prev => ({ ...prev, password: e.target.value }))}
+                    className="h-12 text-base"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="confirmPassword" className="text-base font-medium mb-2 block">确认密码</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="请再次输入密码"
+                    value={registerData.confirmPassword}
+                    onChange={(e) => setRegisterData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    className="h-12 text-base"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="code" className="text-base font-medium mb-2 block">验证码</Label>
+                  <Input
+                    id="code"
+                    type="text"
+                    placeholder="请输入验证码"
+                    value={registerData.code}
+                    onChange={(e) => setRegisterData(prev => ({ ...prev, code: e.target.value }))}
                     className="h-12 text-base"
                   />
                 </div>
@@ -83,21 +127,21 @@ const Login = () => {
                   disabled={!canProceed()}
                 >
                   <Lock className="w-5 h-5 mr-3" />
-                  登录
+                  注册
                 </Button>
               </form>
-              
-              {/* 跳转到注册界面的提示 */}
+
+              {/* 跳转到登录界面的提示 */}
               <div className="text-center">
                 <p className="text-gray-600 mb-2">
-                  还没有账号？
+                  已经有账号？
                 </p>
                 <Button
                   variant="ghost"
-                  onClick={() => navigate('/register')}
+                  onClick={() => navigate('/login')}
                   className="text-[#15b078] hover:text-[#394b41] hover:bg-[#15b078]/10"
                 >
-                  <span>点击注册</span>
+                  <span>点击直接登录</span>
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
@@ -109,4 +153,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Register;

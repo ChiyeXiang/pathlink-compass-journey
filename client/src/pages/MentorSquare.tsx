@@ -1,41 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 
 const MentorSquare = () => {
   const navigate = useNavigate();
 
-  const handleBackClick = () => {
-    navigate('/');
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Button 
-                variant="ghost" 
-                onClick={handleBackClick}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                返回首页
-              </Button>
-            </div>
-            <div className="flex items-center">
-              <img 
-                src="https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/20333cb4-3f98-418b-97b4-6084401c6291" 
-                alt="Leland Logo" 
-                className="h-8"
-              />
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader showHomeButton={true} showProfileButtons={true} />
 
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-r from-[#15b078] to-[#394b41] text-white">
@@ -44,22 +17,6 @@ const MentorSquare = () => {
           <p className="text-xl mb-8 max-w-3xl mx-auto">
             连接顶级导师，开启你的成功之路。在这里找到最适合你的专业导师，获得个性化的指导和支持。
           </p>
-          <div className="flex justify-center space-x-4">
-            <Button 
-              size="lg"
-              className="bg-white text-[#15b078] hover:bg-gray-100"
-              onClick={() => navigate('/welcome')}
-            >
-              开始匹配导师
-            </Button>
-            <Button 
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-[#15b078]"
-            >
-              浏览所有导师
-            </Button>
-          </div>
         </div>
       </section>
 

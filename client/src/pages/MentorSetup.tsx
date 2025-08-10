@@ -8,8 +8,8 @@ const MentorSetup = () => {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
-    // 暂时不跳转，等待后续功能实现
-    console.log('开始建立档案按钮被点击');
+    // 跳转到第一个导师设置页面
+    navigate('/mentor-setup/basic-info');
   };
 
   return (
