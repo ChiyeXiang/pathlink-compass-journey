@@ -10,7 +10,7 @@ import mentorLiAvatar from "@/assets/mentor-li.jpg";
 import mentorWangAvatar from "@/assets/mentor-wang.jpg";
 import mentorZhangAvatar from "@/assets/mentor-zhang.jpg";
 
-const MentorMarketplace = () => {
+const MentorChain = () => {
   const navigate = useNavigate();
   const [hoveredMentor, setHoveredMentor] = useState<string | null>(null);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -286,79 +286,10 @@ const MentorMarketplace = () => {
           </div>
         </div>
 
-        {/* All Mentors Section */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-foreground mb-4">导师广场</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...new Set(executionPath.map(step => step.mentor.name))].map((mentorName) => {
-              const mentor = executionPath.find(step => step.mentor.name === mentorName)?.mentor;
-              if (!mentor) return null;
-              
-              return (
-                <Card key={mentorName} className="shadow-soft border-0 hover:shadow-medium transition-all duration-300 cursor-pointer">
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-4 mb-4">
-                      <Avatar className="w-16 h-16">
-                        <AvatarImage src={mentor.avatar} alt={mentor.name} />
-                        <AvatarFallback className="bg-primary text-primary-foreground text-lg">
-                          {mentor.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      
-                      <div className="flex-1">
-                        <h3 className="font-bold text-foreground mb-1">{mentor.name}</h3>
-                        <p className="text-sm text-muted-foreground mb-2">{mentor.title}</p>
-                        <div className="flex items-center mb-2">
-                          <Star className="w-4 h-4 text-warning mr-1" fill="currentColor" />
-                          <span className="text-sm font-semibold">{mentor.rating}</span>
-                          <span className="text-xs text-muted-foreground ml-2">{mentor.experience}</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {mentor.specialties.slice(0, 2).map((specialty) => (
-                            <Badge key={specialty} variant="secondary" className="text-xs">
-                              {specialty}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className="space-y-1 mb-4">
-                      {mentor.achievements.slice(0, 2).map((achievement, idx) => (
-                        <div key={idx} className="flex items-center text-xs text-muted-foreground">
-                          <CheckCircle className="w-3 h-3 mr-1 text-success" />
-                          {achievement}
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="flex space-x-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="flex-1"
-                        onClick={() => navigate('/coffee-chat')}
-                      >
-                        <Calendar className="w-4 h-4 mr-1" />
-                        免费咨询
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        className="flex-1"
-                        onClick={() => handleViewDetails(mentor.name)}
-                      >
-                        查看详情
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
       </div>
     </div>
   );
 };
 
-export default MentorMarketplace;
+export default MentorChain;

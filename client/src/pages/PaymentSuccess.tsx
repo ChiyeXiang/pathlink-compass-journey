@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { PageHeader } from "@/components/ui/page-header";
 import { CheckCircle, Home, FileText, MessageCircle } from "lucide-react";
 import mentorLiAvatar from "@/assets/mentor-li.jpg";
 
@@ -27,6 +28,7 @@ const PaymentSuccess = () => {
 
   return (
     <div className="min-h-screen bg-gradient-soft">
+      <PageHeader />
       <div className="container max-w-2xl mx-auto px-4 py-12">
         {/* Success Icon */}
         <div className="text-center mb-8">

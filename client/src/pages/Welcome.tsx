@@ -113,7 +113,7 @@ const Welcome = () => {
     // Add loading animation
     setIsLoading(true);
     setTimeout(() => {
-      navigate('/mentor-marketplace');
+              navigate('/mentor-chain');
     }, 3000);
   };
   const [isLoading, setIsLoading] = useState(false);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Home, User, FileText, ShoppingCart, ArrowLeft, LogOut, Settings, ChevronDown } from "lucide-react";
+import { Home, User, FileText, ShoppingCart, ArrowLeft, LogOut, Settings, ChevronDown, Users } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface PageHeaderProps {
@@ -77,6 +77,15 @@ export const PageHeader = ({
             <span>首页</span>
           </Button>
         )}
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => navigate("/mentor-square")}
+          className="flex items-center space-x-2"
+        >
+          <Users className="w-4 h-4" />
+          <span>导师广场</span>
+        </Button>
       </div>
 
       {showProfileButtons && (

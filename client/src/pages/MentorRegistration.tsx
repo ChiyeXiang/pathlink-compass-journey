@@ -69,21 +69,7 @@ const MentorRegistration = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <header className="flex items-center justify-between p-6 border-b border-gray-200">
-        <div className="flex items-center space-x-8">
-          <div className="text-2xl font-bold text-gray-800">Leland</div>
-          <nav className="flex items-center space-x-6">
-            <a href="#" className="text-gray-600 hover:text-gray-800">Free events</a>
-            <a href="#" className="text-gray-600 hover:text-gray-800">成为导师</a>
-          </nav>
-        </div>
-        <div className="flex items-center space-x-4">
-          <Button variant="outline" className="border-gray-300 text-gray-700">
-            登录
-          </Button>
-        </div>
-      </header>
+      <PageHeader />
 
       {/* Hero Section */}
       <section className="flex items-center px-12 py-12 max-w-7xl mx-auto">
@@ -267,7 +253,7 @@ const MentorRegistration = () => {
                 onClick={handleBecomeCoach}
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-4 text-lg font-medium rounded-lg"
               >
-                Become a Coach
+                成为导师
               </Button>
             </div>
           </div>
@@ -287,7 +273,7 @@ const MentorRegistration = () => {
                 Come change lives with us.
               </p>
               <div className="flex items-center">
-                <a href="#" className="text-green-600 font-medium mr-2">Become a coach</a>
+                <a href="#" className="text-green-600 font-medium mr-2">成为导师</a>
                 <ArrowRight className="w-5 h-5 text-green-600" />
               </div>
             </div>
@@ -325,9 +311,9 @@ const MentorRegistration = () => {
             <div>
               <h3 className="font-medium mb-4">Welcome</h3>
               <ul className="space-y-2 text-sm opacity-70">
-                <li><a href="#" className="hover:opacity-100">Get started</a></li>
-                <li><a href="#" className="hover:opacity-100">Log in</a></li>
-                <li><a href="#" className="hover:opacity-100">Become a coach</a></li>
+                <li><a href="#" className="hover:opacity-100">开始匹配</a></li>
+                <li><a href="#" className="hover:opacity-100">登录</a></li>
+                <li><a href="#" className="hover:opacity-100">成为导师</a></li>
               </ul>
             </div>
             
