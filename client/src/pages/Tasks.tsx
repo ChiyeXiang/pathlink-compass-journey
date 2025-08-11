@@ -7,7 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/ui/page-header";
-import { ArrowLeft, Upload, Download, FileText, Clock, CheckCircle, Play, Pause, Calendar, User, HelpCircle, Coffee, Archive, Pencil } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { ArrowLeft, Upload, Download, FileText, Clock, CheckCircle, Play, Pause, Calendar, User, HelpCircle, Coffee, Archive, Users } from "lucide-react";
 import mentorLiAvatar from "@/assets/mentor-li.jpg";
 import { ALL_TAGS } from "../../../shared/constants/tags";
 
@@ -15,6 +16,7 @@ import { ALL_TAGS } from "../../../shared/constants/tags";
 
 const Tasks = () => {
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [activeTab, setActiveTab] = useState("current");
   const [user, setUser] = useState<any>(null);
   const [studentInfo, setStudentInfo] = useState<any>(null);
@@ -365,6 +367,14 @@ const Tasks = () => {
           <div className="flex items-center">
             <h1 className="text-xl font-bold text-foreground">个人中心</h1>
           </div>
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/mentor-chain')}
+            className="flex items-center space-x-2"
+          >
+            <Users className="w-4 h-4" />
+            <span>查看导师链</span>
+          </Button>
         </div>
 
         {/* Tabs */}

@@ -5,12 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PageHeader } from "@/components/ui/page-header";
-import { Star, CheckCircle, Calendar, Clock, Award } from "lucide-react";
+import { Star, CheckCircle, Calendar, Clock, Award, ShoppingCart } from "lucide-react";
 import mentorLiAvatar from "@/assets/mentor-li.jpg";
 import mentorWangAvatar from "@/assets/mentor-wang.jpg";
 import mentorZhangAvatar from "@/assets/mentor-zhang.jpg";
 
-const MentorMarketplace = () => {
+const MentorChain = () => {
   const navigate = useNavigate();
   const [hoveredMentor, setHoveredMentor] = useState<string | null>(null);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -105,19 +105,19 @@ const MentorMarketplace = () => {
         ],
         successRate: "94%",
         students: "150+",
-        price: "¥1,899"
+        price: "¥1,199"
       }
     }
   ];
 
   const handleViewDetails = (mentorId: string) => {
-    navigate('/mentor-detail', { state: { mentorId } });
+    console.log(`View details for mentor: ${mentorId}`);
+    navigate('/mentor-detail');
   };
 
   const handleMouseEnter = (stepId: string) => {
     if (hoverTimeout) {
       clearTimeout(hoverTimeout);
-      setHoverTimeout(null);
     }
     setHoveredMentor(stepId);
   };
@@ -125,7 +125,7 @@ const MentorMarketplace = () => {
   const handleMouseLeave = () => {
     const timeout = setTimeout(() => {
       setHoveredMentor(null);
-    }, 150); // 150ms delay
+    }, 200);
     setHoverTimeout(timeout);
   };
 
@@ -137,12 +137,69 @@ const MentorMarketplace = () => {
     }
   };
 
+  const handleAddAllToCart = () => {
+    try {
+      // 获取当前购物车
+      const currentCart = JSON.parse(localStorage.getItem('cart') || '[]');
+      
+      // 为每个导师服务创建购物车项目
+      const newCartItems = executionPath.map((step) => {
+        // 解析价格，移除 ¥ 符号和逗号
+        const priceStr = step.mentor.price.replace('¥', '').replace(/,/g, '');
+        const price = parseInt(priceStr);
+        
+        return {
+          id: `${step.id}-${step.mentor.name}`,
+          type: 'service',
+          name: step.title,
+          price: price,
+          mentor: step.mentor.name,
+          description: step.description,
+          duration: '根据服务内容',
+          sessions: 1
+        };
+      });
+      
+      // 检查是否已经存在相同的服务，避免重复添加
+      const existingIds = currentCart.map((item: any) => item.id);
+      const uniqueNewItems = newCartItems.filter(item => !existingIds.includes(item.id));
+      
+      if (uniqueNewItems.length === 0) {
+        alert('所有服务已在购物车中！');
+        return;
+      }
+      
+      // 添加到购物车
+      const updatedCart = [...currentCart, ...uniqueNewItems];
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
+      
+      // 触发购物车更新事件
+      window.dispatchEvent(new CustomEvent('cartUpdate'));
+      
+      // 显示成功消息
+      alert(`成功添加 ${uniqueNewItems.length} 项服务到购物车！`);
+      
+    } catch (error) {
+      console.error('Error adding items to cart:', error);
+      alert('添加购物车失败，请重试');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-soft">
       <PageHeader />
       <div className="container max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
+          <div className="flex items-center justify-end mb-6">
+            <Button 
+              onClick={handleAddAllToCart}
+              className="bg-primary hover:bg-primary-dark text-primary-foreground px-6 py-2 flex items-center space-x-2"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              <span>一键加入购物车</span>
+            </Button>
+          </div>
           <h1 className="text-3xl font-bold text-foreground mb-2">为你推荐专属申请路径</h1>
           <p className="text-muted-foreground">
             基于你的需求，我们为你匹配了最合适的导师和服务流程
@@ -286,79 +343,10 @@ const MentorMarketplace = () => {
           </div>
         </div>
 
-        {/* All Mentors Section */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-foreground mb-4">导师广场</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...new Set(executionPath.map(step => step.mentor.name))].map((mentorName) => {
-              const mentor = executionPath.find(step => step.mentor.name === mentorName)?.mentor;
-              if (!mentor) return null;
-              
-              return (
-                <Card key={mentorName} className="shadow-soft border-0 hover:shadow-medium transition-all duration-300 cursor-pointer">
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-4 mb-4">
-                      <Avatar className="w-16 h-16">
-                        <AvatarImage src={mentor.avatar} alt={mentor.name} />
-                        <AvatarFallback className="bg-primary text-primary-foreground text-lg">
-                          {mentor.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      
-                      <div className="flex-1">
-                        <h3 className="font-bold text-foreground mb-1">{mentor.name}</h3>
-                        <p className="text-sm text-muted-foreground mb-2">{mentor.title}</p>
-                        <div className="flex items-center mb-2">
-                          <Star className="w-4 h-4 text-warning mr-1" fill="currentColor" />
-                          <span className="text-sm font-semibold">{mentor.rating}</span>
-                          <span className="text-xs text-muted-foreground ml-2">{mentor.experience}</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {mentor.specialties.slice(0, 2).map((specialty) => (
-                            <Badge key={specialty} variant="secondary" className="text-xs">
-                              {specialty}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className="space-y-1 mb-4">
-                      {mentor.achievements.slice(0, 2).map((achievement, idx) => (
-                        <div key={idx} className="flex items-center text-xs text-muted-foreground">
-                          <CheckCircle className="w-3 h-3 mr-1 text-success" />
-                          {achievement}
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="flex space-x-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="flex-1"
-                        onClick={() => navigate('/coffee-chat')}
-                      >
-                        <Calendar className="w-4 h-4 mr-1" />
-                        免费咨询
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        className="flex-1"
-                        onClick={() => handleViewDetails(mentor.name)}
-                      >
-                        查看详情
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
       </div>
     </div>
   );
 };
 
-export default MentorMarketplace;
+export default MentorChain;

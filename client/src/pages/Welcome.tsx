@@ -159,7 +159,7 @@ const Welcome = () => {
       }
 
       // 成功：跳转
-      navigate('/mentor-marketplace');
+      navigate('/mentor-chain');
     } catch (e) {
       console.error('提交问卷失败:', e);
       setIsLoading(false);

@@ -8,8 +8,8 @@ const MentorSetup = () => {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
-    // 跳转到导师详细设置页面
-    navigate('/mentor-registration');
+    // 跳转到第一个导师设置页面
+    navigate('/mentor-setup/basic-info');
   };
 
   return (

@@ -246,6 +246,8 @@ const MentorDetail = () => {
                 // Show success message and don't navigate
                 const event = new CustomEvent('cartAdded');
                 window.dispatchEvent(event);
+                // 触发购物车数量更新
+                window.dispatchEvent(new CustomEvent('cartUpdate'));
               }}
               disabled={!selectedService}
             >
