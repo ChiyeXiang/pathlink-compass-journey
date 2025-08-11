@@ -17,19 +17,3 @@ export async function findStudentByEmail(email: string): Promise<(IUser & { goal
   return await Student.findOne({ email });
 }
 
-
-// // 查找所有用户（可选）
-// export async function getAllUsers() {
-//   return await User.find();
-// }
-
-// // 根据邮箱查找用户
-// export async function findUserByEmail(email: string) {
-//   return await User.findOne({ email });
-// }
-
-// // 添加新用户
-// export async function addUser(user: { email: string, password: string }) {
-//   const newUser = new User(user);
-//   await newUser.save();
-// }

@@ -26,6 +26,8 @@ interface MatchStats {
 const Welcome = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1); // Start with questionnaire step
+  const [user, setUser] = useState<any>(null);
+
   const [formData, setFormData] = useState<FormData>({
     AppDegree: [],
     multipleCountries: [],
@@ -71,8 +73,28 @@ const Welcome = () => {
   }];
   const totalSteps = 5; // Questionnaire steps only
 
+  // 获取当前登录用户
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    (async () => {
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error('无法获取用户信息');
+        const data = await res.json();
+        setUser(data); // 期望包含 userId, name, email, createdAt
+      } catch (e) {
+        console.error('获取用户信息失败:', e);
+      }
+    })();
+  }, []);
+
   // Calculate match stats based on answers
   useEffect(() => {
+    
     let projects = 15;
     let mentors = 8;
     if (formData.AppDegree.length > 0) {
@@ -108,13 +130,40 @@ const Welcome = () => {
       setCurrentStep(currentStep - 1);
     }
   };
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     localStorage.setItem('applicationData', JSON.stringify(formData));
-    // Add loading animation
+
+    const token = localStorage.getItem('token');
+    if (!token || !user?.userId) {
+      console.error('缺少 token 或 userId，无法提交问卷');
+      return;
+    }
+
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch('/api/student/welcome', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // 若后端未校验可临时去掉
+        },
+        body: JSON.stringify({
+          userId: user.userId,
+          formData
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.message || '提交失败');
+      }
+
+      // 成功：跳转
       navigate('/mentor-marketplace');
-    }, 3000);
+    } catch (e) {
+      console.error('提交问卷失败:', e);
+      setIsLoading(false);
+    }
   };
   const [isLoading, setIsLoading] = useState(false);
   const canProceed = () => {

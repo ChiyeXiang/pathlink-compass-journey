@@ -1,18 +1,19 @@
 import mongoose from 'mongoose';
-import { IUser } from '../interfaces/IUser';
 
-const StudentSchema = new mongoose.Schema<IUser & {
-  goal?: string; // Student 专属字段
-}>(
+const StudentSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    userId: { type: String, unique: true }, // 替代 studentId，更通用
-    userType: { type: String, enum: ['student'], default: 'student' },
-    goal: { type: String },
+    userId: { type: String, required: true, unique: true }, 
+
+    // —— Welcome 问卷字段 —— //
+    AppDegree:         { type: [String], default: [] },
+    multipleCountries: { type: [String], default: [] },
+    scholarshipInterested: { type: [String], default: [] },
+    field:             { type: [String], default: [] },
+    DreamCountrySchool:{ type: [String], default: [] },
+    targetDetails:     { type: String, default: '' },
+    budgetPreference:  { type: [String], default: [] },
   },
-  { timestamps: true } 
+  { timestamps: true }
 );
 
 export const Student = mongoose.model('Student', StudentSchema);

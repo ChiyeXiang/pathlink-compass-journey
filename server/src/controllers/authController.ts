@@ -2,15 +2,15 @@ import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Student } from '../models/student';
-import { addStudent, findStudentByEmail } from '../repositories/studentRepository';
+import { User } from '../models/user';
+import { addUser, findUserByEmail } from '../repositories/userRepository';
 import { saveCode, verifyCode } from '../repositories/codeRepository';
 import { sendVerificationCode } from '../utils/mailer';
-import { IUser } from '../interfaces/IUser';
 
-// 注册学生
-export const registerStudent = async (req: Request, res: Response) => {
-  const { name, email, password, confirmPassword, code, goal } = req.body;
+
+// 注册用户（统一入口）
+export const register = async (req: Request, res: Response) => {
+  const { name, email, password, confirmPassword, code, userType } = req.body;
 
   if (!name || !email || !password || !confirmPassword) {
     return res.status(400).json({ message: '请填写所有字段' });
@@ -22,109 +22,80 @@ export const registerStudent = async (req: Request, res: Response) => {
 
   const isValid = await verifyCode(email, code);
   if (!isValid) {
-    return res.status(400).json({ message: '验证码无效或已过期' });
+    return res.status(400).json({ message: '验证码错误或已过期' });
   }
 
-  const existing = await findStudentByEmail(email);
+  const existing = await findUserByEmail(email);
   if (existing) {
     return res.status(400).json({ message: '该邮箱已注册，请直接登录' });
   }
 
-  // 生成 userId（studentId）
-  const userId = `STU${new Date().getFullYear()}${uuidv4().slice(0, 6).toUpperCase()}`;
+  const now = new Date();
+  const datePart = now.toISOString().slice(0, 10).replace(/-/g, ''); 
+  const randomPart = uuidv4().slice(0, 6).toUpperCase();            
 
-  const newStudent = new Student({
+const userId = `${datePart}${randomPart}`;
+
+  const newUser = new User({
     name,
     email,
     password,
     userId,
-    goal,
-    userType: 'student'
+    userType,
   });
 
-  await newStudent.save();
+  await newUser.save();
 
   const token = jwt.sign(
-    { email: newStudent.email, name: newStudent.name, role: 'student' },
+    { email: newUser.email, name: newUser.name},
     process.env.JWT_SECRET as string,
     { expiresIn: '7d' }
   );
 
   return res.status(201).json({
     message: '注册成功',
-    student: {
-      name: newStudent.name,
-      email: newStudent.email,
-      goal: newStudent.goal,
-      userId: newStudent.userId,
-      userType: newStudent.userType,
+    user: {
+      name: newUser.name,
+      email: newUser.email,
+      userId: newUser.userId,
     },
-    token
+    token,
   });
 };
 
-// 登录学生
+
+// 用户登录
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  const student = await findStudentByEmail(email);
-  if (!student) {
+  const user = await findUserByEmail(email);
+  if (!user) {
     return res.status(400).json({ message: '该邮箱尚未注册' });
   }
 
-  if (student.password !== password) {
+  if (user.password !== password) {
     return res.status(401).json({ message: '密码错误' });
   }
 
   const token = jwt.sign(
-    { email: student.email, name: student.name, role: 'student' },
+    { email: user.email, name: user.name},
     process.env.JWT_SECRET as string,
     { expiresIn: '7d' }
   );
 
   return res.status(200).json({
     message: '登录成功',
-    student: {
-      name: student.name,
-      email: student.email,
-      userId: student.userId,
-      userType: student.userType,
-      goal: student.goal,
+    user: {
+      name: user.name,
+      email: user.email,
+      userId: user.userId,
     },
-    token
+    token,
   });
 };
 
-// 获取当前登录学生信息
-export const getCurrentStudent = async (req: Request, res: Response) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith('Bearer ')) {
-    return res.status(401).json({ message: '未提供Token' });
-  }
 
-  const token = authHeader.split(' ')[1];
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { email: string };
-
-    const student = await findStudentByEmail(decoded.email);
-    if (!student) {
-      return res.status(404).json({ message: '用户不存在' });
-    }
-
-    return res.json({
-      name: student.name,
-      email: student.email,
-      goal: student.goal,
-      userId: student.userId,
-      userType: student.userType,
-      createdAt: student.createdAt,
-    });
-  } catch {
-    return res.status(401).json({ message: 'Token无效或过期' });
-  }
-};
-
-// 发送验证码
+// 发送邮箱验证码
 export const sendCode = async (req: Request, res: Response) => {
   const { email } = req.body;
   const code = Math.floor(100000 + Math.random() * 900000).toString();

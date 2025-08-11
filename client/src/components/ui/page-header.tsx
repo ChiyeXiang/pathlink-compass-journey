@@ -6,11 +6,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 interface PageHeaderProps {
   showHomeButton?: boolean;
   showProfileButtons?: boolean;
+  setIsLoggedIn?: (val: boolean) => void;
 }
 
 export const PageHeader = ({ 
   showHomeButton = true, 
-  showProfileButtons = true 
+  showProfileButtons = true ,
+  setIsLoggedIn
 }: PageHeaderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,9 +23,11 @@ export const PageHeader = ({
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('student');
-    navigate('/');
+    localStorage.removeItem('user');
+    if (setIsLoggedIn) setIsLoggedIn(false);
+    navigate('/');      
   };
+
 
   useEffect(() => {
     const handleCartAdded = () => {

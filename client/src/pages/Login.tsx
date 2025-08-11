@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User, Lock, ArrowLeft } from "lucide-react";
 import { ShineBorder } from "@/components/magicui/shine-border";
+import { useEffect } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [loginData, setLoginData] = useState({
     email: "",
@@ -18,6 +20,16 @@ const Login = () => {
     code: ""
   });
 
+    // 页面加载时检查 token 是否存在
+    useEffect(() => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        setIsLoggedIn(true);
+      }
+    }, []);
+  
+  
+
   const canProceed = () => {
     if (isLoginMode) {
       return loginData.email !== "" && loginData.password !== "";
@@ -26,11 +38,76 @@ const Login = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (canProceed()) {
-      // 模拟登录成功
-      localStorage.setItem('token', 'dummy-token');
+      if (isLoginMode) {
+      if (loginData.email && loginData.password) {
+        try {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email: loginData.email,
+              password: loginData.password
+            })
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            alert(data.message || '登录失败');
+          } else {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+
+            setIsLoggedIn(true);
+            navigate('/mentor-marketplace');
+          }
+        } catch (err) {
+          console.error(err);
+          alert('网络错误，请稍后重试');
+        }
+      }
+    } else {
+      if (
+        loginData.email &&
+        loginData.password &&
+        loginData.confirmPassword &&
+        loginData.name &&
+        loginData.password === loginData.confirmPassword
+      ) {
+        try {
+          const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(loginData)
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+
+            alert('注册成功：' + data.message);
+            setIsLoggedIn(true);
+            navigate('/welcome');
+          } else {
+            alert('注册失败：' + data.message || '未知错误');
+          }
+        } catch (err) {
+          console.error('注册出错', err);
+          alert('网络错误或服务器未响应');
+        }
+      }
+
+
+    }
       navigate('/mentor-marketplace');
     }
   };
@@ -98,32 +175,68 @@ const Login = () => {
                 </div>
 
                 {!isLoginMode && (
-                  <>
-                    <div>
-                      <Label htmlFor="confirmPassword">确认密码</Label>
-                      <Input
-                        id="confirmPassword"
-                        type="password"
-                        placeholder="请再次输入密码"
-                        value={loginData.confirmPassword}
-                        onChange={(e) => setLoginData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                      />
-                    </div>
+                <div>
+                  <Label htmlFor="confirmPassword">确认密码</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="请再次输入密码"
+                    value={loginData.confirmPassword}
+                    onChange={(e) => setLoginData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  />
+                  {loginData.password !== loginData.confirmPassword && loginData.confirmPassword && (
+                    <p className="text-sm text-destructive mt-1">密码不匹配</p>
+                  )}
+                </div>
+              ) 
+              }
 
-                    <div>
-                      <Label htmlFor="code">验证码</Label>
+                {!isLoginMode && (
+                  <div>
+                    <Label htmlFor="code">邮箱验证码</Label>
+                    <div className="flex gap-2">
                       <Input
                         id="code"
                         type="text"
-                        placeholder="请输入验证码"
+                        placeholder="请输入邮箱验证码"
                         value={loginData.code}
                         onChange={(e) => setLoginData(prev => ({ ...prev, code: e.target.value }))}
                       />
+                      <Button
+                        variant="secondary"
+                        onClick={async () => {
+                          if (!loginData.email) return alert("请先填写邮箱");
+                          try {
+                            const res = await fetch('/api/auth/send-code', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json'
+                              },
+                              body: JSON.stringify({ email: loginData.email })
+                            });
+                            const data = await res.json();
+                            if (res.ok) {
+                              alert("验证码已发送，请检查邮箱");
+                            } else {
+                              alert("发送失败：" + data.message);
+                            }
+                          } catch (err) {
+                            console.error('验证码发送失败', err);
+                            alert('网络错误，无法发送验证码');
+                          }
+                        }}
+                      >
+                        获取验证码
+                      </Button>
                     </div>
-                  </>
-                )}
+                  </div>
 
-                                 <Button
+              )
+
+              }
+
+
+                  <Button
                    type="submit"
                    className="w-full bg-gradient-to-r from-[#15b078] to-[#394b41] hover:from-[#394b41] hover:to-[#15b078] text-white"
                    disabled={!canProceed()}

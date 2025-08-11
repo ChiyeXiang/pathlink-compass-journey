@@ -1,4 +1,4 @@
-import { useState , useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,13 +7,50 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/ui/page-header";
-import { ArrowLeft, Upload, Download, FileText, Clock, CheckCircle, Play, Pause, Calendar, User, HelpCircle, Coffee, Archive } from "lucide-react";
+import { ArrowLeft, Upload, Download, FileText, Clock, CheckCircle, Play, Pause, Calendar, User, HelpCircle, Coffee, Archive, Pencil } from "lucide-react";
 import mentorLiAvatar from "@/assets/mentor-li.jpg";
+import { ALL_TAGS } from "../../../shared/constants/tags";
+
+
 
 const Tasks = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("current");
-  const [student, setStudent] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
+  const [studentInfo, setStudentInfo] = useState<any>(null);
+  const [mentorInfo, setMentorInfo] = useState<any>(null);
+
+  // —— 编辑对话框相关 —— //
+  const [openEdit, setOpenEdit] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // 基本信息（User）
+  const [formUser, setFormUser] = useState<{ name: string }>({ name: "" });
+
+  // 学生扩展信息（根据你的 Student 表字段自行增减）
+  const [formStudent, setFormStudent] = useState<{
+    field: string[];              // 多选
+    targetDetails: string;
+  }>({ field: [], targetDetails: "" });
+
+  // 导师扩展信息
+  const [formMentor, setFormMentor] = useState<{
+    displayName: string;
+    education: string;
+    summary: string;
+    expertise: string[];
+    tags: string[];
+    availabilityText: string;
+  }>({
+    displayName: "",
+    education: "",
+    summary: "",
+    expertise: [],
+    tags: [],
+    availabilityText: "[]"
+  });
+
+
 
   const currentTasks = [
     {
@@ -44,7 +81,7 @@ const Tasks = () => {
       reusabilityNote: "该阶段成果会作为档案长期留存，未来可用于研究生申请/奖学金/交换，免费调取 5 次"
     },
     {
-      id: "task2", 
+      id: "task2",
       title: "核心文书共创",
       description: "1对1文书指导和修改",
       status: "scheduled",
@@ -121,26 +158,163 @@ const Tasks = () => {
     }
   };
 
-
   useEffect(() => {
-  const fetchStudent = async () => {
     const token = localStorage.getItem('token');
-    if (!token) return;
+    if (!token) {
+      navigate('/');
+      return;
+    };
 
+    const fetchUser = async () => {
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error('无法获取用户信息');
+        const userData = await res.json();
+        setUser(userData);
+        setFormUser({ name: userData?.name || "" });
+        return userData;
+      } catch (error) {
+        console.error('获取用户信息失败:', error);
+      }
+    };
+
+    const fetchStudentInfo = async (userId: string) => {
+      try {
+        const res = await fetch(`/api/student/profile/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setStudentInfo(data);
+          // 预填学生表单
+          setFormStudent({
+            field: Array.isArray(data?.field) ? data.field : [],
+            targetDetails: data?.targetDetails || ""
+          });
+          return true;
+        }
+        return false;
+      } catch (e) {
+        console.warn('student profile err:', e);
+        return false;
+      }
+    };
+
+    const fetchMentorInfo = async (userId: string) => {
+      try {
+        const res = await fetch(`/api/mentor/profile/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setMentorInfo(data);
+          // 预填导师表单
+          setFormMentor({
+            displayName: data?.displayName || "",
+            education: data?.education || "",
+            summary: data?.summary || "",
+            expertise: Array.isArray(data?.expertise) ? data.expertise : [],
+            tags: Array.isArray(data?.tags) ? data.tags : [],
+            availabilityText: JSON.stringify(data?.availability || [], null, 2)
+          });
+          return true;
+        }
+        return false;
+      } catch (e) {
+        console.warn('mentor profile err:', e);
+        return false;
+      }
+    };
+
+    const init = async () => {
+      const userData = await fetchUser();
+      if (!userData) return;
+
+      const isStudent = await fetchStudentInfo(userData.userId);
+      if (!isStudent) {
+        await fetchMentorInfo(userData.userId);
+      }
+    };
+
+    init();
+  }, []);
+
+
+  const onSaveProfile = async () => {
+    const token = localStorage.getItem('token');
+    if (!token || !user?.userId) return;
+
+    setSaving(true);
     try {
-      const response = await fetch('/api/auth/me', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) throw new Error('无法获取学生信息');
-      const data = await response.json();
-      setStudent(data); // ✅ 改为 student
-    } catch (error) {
-      console.error('获取学生信息失败：', error);
+      // 1) 更新 User 基本信息（name）
+      await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ name: formUser.name })
+      }).catch(() => { });
+
+      // 2) 若有学生信息，upsert 学生
+      if (studentInfo) {
+        await fetch('/api/student/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({
+            userId: user.userId,
+            payload: {
+              field: formStudent.field,
+              targetDetails: formStudent.targetDetails
+            }
+          })
+        });
+      }
+
+      // 3) 若有导师信息，upsert 导师
+      if (mentorInfo) {
+        // 校验 tags 必须正好 3 个（与你后端校验一致）
+        if (formMentor.tags.length !== 3) {
+          alert('导师标签必须选择 3 个');
+          setSaving(false);
+          return;
+        }
+        // availability 解析
+        let availabilityParsed: any[] = [];
+        try {
+          availabilityParsed = JSON.parse(formMentor.availabilityText || '[]');
+        } catch {
+          alert('availability 需为合法 JSON 数组');
+          setSaving(false);
+          return;
+        }
+
+        await fetch('/api/mentor/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({
+            userId: user.userId,
+            payload: {
+              displayName: formMentor.displayName,
+              education: formMentor.education,
+              summary: formMentor.summary,
+              expertise: formMentor.expertise,
+              tags: formMentor.tags,
+              availability: availabilityParsed
+            }
+          })
+        });
+      }
+
+      // 重新拉取展示数据
+      setOpenEdit(false);
+      setSaving(false);
+      window.location.reload();
+    } catch (e) {
+      console.error('保存失败', e);
+      setSaving(false);
+      alert('保存失败，请稍后再试');
     }
   };
-
-  fetchStudent();
-}, []);
 
 
 
@@ -159,16 +333,16 @@ const Tasks = () => {
                   张
                 </AvatarFallback>
               </Avatar>
-              
+
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-foreground mb-1">{student?.name || '加载中...'}</h2>
+                <h2 className="text-xl font-bold text-foreground mb-1">{user?.name || '加载中...'}</h2>
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-2">
-                  <span>账号ID: {student?.userId || 'STU000000'}</span>
+                  <span>账号ID: {user?.userId || 'STU000000'}</span>
                   <span>•</span>
-                  <span>目标: 美国商科硕士</span>
+                  <span>专业方向: {studentInfo?.field || '尚未填写'}</span>
                 </div>
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                  <span>注册时间: {student?.createdAt?.slice(0, 10)}</span>
+                  <span>注册时间: {user?.createdAt?.slice(0, 10)}</span>
                   <span>•</span>
                   <span>服务状态: 进行中</span>
                 </div>
@@ -176,6 +350,15 @@ const Tasks = () => {
             </div>
           </CardContent>
         </Card>
+
+
+
+        
+
+
+
+
+
 
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -200,31 +383,30 @@ const Tasks = () => {
                       <CardTitle className="text-lg">{task.title}</CardTitle>
                       <p className="text-muted-foreground">{task.description}</p>
                     </div>
-                    <Badge 
-                      className={`${
-                        task.status === 'in-progress' ? 'bg-primary text-primary-foreground' :
+                    <Badge
+                      className={`${task.status === 'in-progress' ? 'bg-primary text-primary-foreground' :
                         task.status === 'scheduled' ? 'bg-warning text-warning-foreground' :
-                        'bg-muted text-muted-foreground'
-                      }`}
+                          'bg-muted text-muted-foreground'
+                        }`}
                     >
                       {task.phase}
                     </Badge>
                   </div>
                 </CardHeader>
-                
+
                 <CardContent className="space-y-6">
-                   {/* Mentor Info with Avatar */}
+                  {/* Mentor Info with Avatar */}
                   <div className="flex items-center justify-between p-4 bg-accent rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <img 
-                        src={task.mentorAvatar} 
+                      <img
+                        src={task.mentorAvatar}
                         alt={task.mentor}
                         className="w-12 h-12 rounded-full object-cover"
                       />
                       <div>
                         <p className="text-sm font-semibold text-accent-foreground">执行负责人</p>
                         <p className="text-sm text-foreground">{task.mentor}</p>
-                    
+
                       </div>
                     </div>
                     <div className="flex flex-col items-end space-y-2">
@@ -300,9 +482,9 @@ const Tasks = () => {
                               </Button>
                             )}
                             {deliverable.status === "in-progress" && (
-                              <Button 
-                                size="sm" 
-                                variant="ghost" 
+                              <Button
+                                size="sm"
+                                variant="ghost"
                                 className="h-8 px-2"
                                 onClick={() => handleUpload(task.id, deliverable.name)}
                               >
@@ -360,7 +542,7 @@ const Tasks = () => {
                     </div>
                   </div>
                 </CardHeader>
-                
+
                 <CardContent className="space-y-4">
                   {/* Deliverables */}
                   <div>
