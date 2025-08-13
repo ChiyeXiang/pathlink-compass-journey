@@ -37,6 +37,7 @@ import FinalQuestions from "./pages/mentor-setup/FinalQuestions";
 import PhoneNumber from "./pages/mentor-setup/PhoneNumber";
 import MentorQuestionsDone from "./pages/mentor-setup/MentorQuestionsDone";
 import TestNavigation from "./pages/mentor-setup/TestNavigation";
+import MentorProfile from "./pages/MentorPofile";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +63,11 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/mentor-detail" element={
+              <ProtectedRoute>
+                <MentorDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/mentor-detail/:userId" element={
               <ProtectedRoute>
                 <MentorDetail />
               </ProtectedRoute>
@@ -176,6 +182,12 @@ const App = () => (
             <Route path="/mentor-setup/test" element={
               <ProtectedRoute>
                 <TestNavigation />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/mentor-profile" element={
+              <ProtectedRoute>
+                <MentorProfile />
               </ProtectedRoute>
             } />
             

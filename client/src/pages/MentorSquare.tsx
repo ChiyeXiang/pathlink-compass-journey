@@ -1,10 +1,69 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
+import { Badge as UIBadge } from "@/components/ui/badge";
+
+type MentorCard = {
+  userId: string;
+  displayName: string;
+  education?: string;
+  summary?: string;
+  expertise?: string[];
+  tags?: string[];
+  // 你可以在卡片上显示“最近可约日期”
+  availability?: { date: string; slots: { start: string; end: string }[] }[];
+};
 
 const MentorSquare = () => {
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(true);
+  const [mentors, setMentors] = useState<MentorCard[]>([]);
+  const [q, setQ] = useState('');
+  const [tag, setTag] = useState('');
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+
+  const fetchList = async (reset = false) => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({
+        q,
+        tag,
+        page: String(reset ? 1 : page),
+        pageSize: '12',
+      });
+
+      const res = await fetch(`/api/mentor/list?${params.toString()}`);
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      setMentors((prev) => (reset ? data.data : [...prev, ...data.data]));
+      setHasMore(data.hasMore);
+      setPage(data.page + 1);
+    } catch (e) {
+      console.error('加载导师列表失败：', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+   useEffect(() => {
+    // 初次加载
+    fetchList(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onSearch = () => {
+    setPage(1);
+    fetchList(true);
+  };
+
+  const nextAvailable = (m: MentorCard) => {
+    const d = (m.availability || []).map(a => a.date).sort()[0];
+    return d ? `最近可约：${d}` : '';
+    // 如需更精确可以拼时间段：a.slots[0]?.start
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
@@ -164,6 +223,77 @@ const MentorSquare = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+
+
+      {/* Mentor Cards */}
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-bold mb-6">推荐导师</h2>
+
+          {loading && mentors.length === 0 ? (
+            <div className="text-muted-foreground">加载中…</div>
+          ) : mentors.length === 0 ? (
+            <div className="text-muted-foreground">暂无导师</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {mentors.map((m) => (
+                <div key={m.userId} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="p-6">
+                    <div className="flex items-start mb-4">
+                      <img
+                        src={`https://api.dicebear.com/8.x/initials/svg?seed=${encodeURIComponent(m.displayName || '导师')}`}
+                        alt={m.displayName}
+                        className="w-16 h-16 rounded-full object-cover mr-4"
+                      />
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold">{m.displayName}</h3>
+                        <p className="text-gray-600">{m.education || '—'}</p>
+                        <div className="text-xs text-muted-foreground mt-1">{nextAvailable(m)}</div>
+                      </div>
+                    </div>
+
+                    {m.summary && <p className="text-gray-700 mb-3 line-clamp-2">{m.summary}</p>}
+
+                    {Array.isArray(m.expertise) && m.expertise.length > 0 && (
+                      <div className="text-sm text-gray-600 mb-3">
+                        擅长方向：{m.expertise.slice(0, 3).join('、')}
+                        {m.expertise.length > 3 ? ' …' : ''}
+                      </div>
+                    )}
+
+                    {Array.isArray(m.tags) && m.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {m.tags.slice(0, 3).map((t) => (
+                          <UIBadge variant="secondary">{t}</UIBadge>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">更新于 {new Date(m as any).toLocaleDateString?.() || ''}</span>
+                      <Button
+                        className="bg-[#15b078] hover:bg-[#394b41]"
+                        onClick={() => navigate(`/mentor-detail/${m.userId}`)}
+                      >
+                        查看详情
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {hasMore && (
+            <div className="flex justify-center mt-8">
+              <Button variant="outline" onClick={() => fetchList(false)} disabled={loading}>
+                {loading ? '加载中…' : '加载更多'}
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 

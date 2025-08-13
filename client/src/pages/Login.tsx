@@ -11,11 +11,15 @@ import { useEffect } from "react";
 const Login = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoginMode, setIsLoginMode] = useState(true);
   const location = useLocation();
   const { login } = useAuth();
   const [loginData, setLoginData] = useState({
     email: "",
-    password: ""
+    password: "",
+    confirmPassword: "",
+    name: "",
+    code: ""
   });
 
   // 如果用户已经登录，重定向到目标页面或默认页面
@@ -61,7 +65,7 @@ const Login = () => {
             localStorage.setItem('user', JSON.stringify(data.user));
 
             setIsLoggedIn(true);
-            navigate('/mentor-marketplace');
+            navigate('/mentor-square');
           }
         } catch (err) {
           console.error(err);
@@ -105,7 +109,7 @@ const Login = () => {
 
 
     }
-      navigate('/mentor-marketplace');
+      navigate('/mentor-square');
     }
   };
 

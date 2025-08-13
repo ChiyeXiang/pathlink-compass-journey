@@ -9,7 +9,8 @@ const MentorSetup = () => {
 
   const handleGetStarted = () => {
     // 跳转到第一个导师设置页面
-    navigate('/mentor-setup/basic-info');
+    // navigate('/mentor-setup/basic-info');
+    navigate('/mentor-profile'); // 调试中，暂时先转到mentor-profile
   };
 
   return (
