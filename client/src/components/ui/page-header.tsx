@@ -25,6 +25,7 @@ export const PageHeader = ({
   const isHomePage = location.pathname === '/' || location.pathname === '/index';
   const isMentorRegistrationPage = location.pathname === '/mentor-registration';
   const isLoginPage = location.pathname === '/login';
+  const isMentorChainPage = location.pathname === '/mentor-chain';
 
   const handleLogout = () => {
     logout();
@@ -111,7 +112,13 @@ export const PageHeader = ({
               <Button 
                 variant="ghost" 
                 size="sm" 
-                onClick={() => navigate(-1)}
+                onClick={() => {
+                  if (isMentorChainPage) {
+                    navigate('/tasks'); // MentorChain页面返回时跳转到个人中心
+                  } else {
+                    navigate(-1); // 其他页面正常返回
+                  }
+                }}
                 className="flex items-center space-x-2"
               >
                 <ArrowLeft className="w-4 h-4" />
