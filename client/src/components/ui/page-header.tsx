@@ -27,10 +27,7 @@ export const PageHeader = ({
   const isLoginPage = location.pathname === '/login';
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    if (setIsLoggedIn) setIsLoggedIn(false);
-    navigate('/');      
+    logout();
   };
 
   // 获取购物车商品数量
@@ -214,12 +211,16 @@ export const PageHeader = ({
                       <button
                         onClick={() => {
                           setShowSettingsDropdown(false);
-                          navigate("/mentor-registration");
+                          if (isMentorRegistrationPage) {
+                            navigate("/mentor-square");
+                          } else {
+                            navigate("/mentor-registration");
+                          }
                         }}
                         className="w-full px-4 py-2 text-left hover:bg-accent transition-colors flex items-center space-x-2"
                       >
                         <FileText className="w-4 h-4" />
-                        <span>切换到导师</span>
+                        <span>{isMentorRegistrationPage ? "切换到个人" : "切换到导师"}</span>
                       </button>
                     </div>
                   </div>

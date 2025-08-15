@@ -45,9 +45,9 @@ const ProfileSetup = () => {
               <div className="w-16 h-16 bg-gradient-primary rounded-2xl mx-auto mb-4 flex items-center justify-center">
                 <User className="w-8 h-8 text-primary-foreground" />
               </div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">让我们开始建立你的个人档案</h1>
+              <h1 className="text-3xl font-bold text-foreground mb-2">你的个人档案</h1>
               <p className="text-muted-foreground mb-6">
-                我们很高兴能了解更多关于你的信息！你将通过一系列问题来设置基本档案。完成后，你的档案将由我们的团队成员审核。
+                填写以下表格，让导师更好地了解你！
               </p>
             </div>
 
@@ -186,15 +186,8 @@ const ProfileSetup = () => {
 
                   <div className="flex justify-center pt-6">
                     <Button type="submit" className="rounded-xl px-8 py-3 text-lg">
-                      开始建立档案
+                      保存
                     </Button>
-                  </div>
-                  
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground flex items-center justify-center">
-                      <Clock className="w-4 h-4 mr-2" />
-                      这通常需要5-7分钟
-                    </p>
                   </div>
                 </form>
               </CardContent>

@@ -1,14 +1,28 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { ReviewMarquee } from '../components/ReviewMarquee';
 import { PageHeader } from '@/components/ui/page-header';
 import './LelandLandingPage.css';
 
 const LelandLandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const handleJoinPathlinkClick = () => {
-    navigate('/welcome');
+    if (isAuthenticated) {
+      navigate('/welcome');
+    } else {
+      navigate('/login');
+    }
+  };
+
+  const handleSearchClick = () => {
+    if (isAuthenticated) {
+      navigate('/mentor-square');
+    } else {
+      navigate('/login');
+    }
   };
 
   return (
@@ -37,10 +51,12 @@ const LelandLandingPage: React.FC = () => {
               />
               <input 
                 type="text" 
-                placeholder="Search for coaching in any category" 
+                placeholder="开始匹配最适合你的导师" 
                 className="search-input"
+                onClick={handleSearchClick}
+                readOnly
               />
-              <button className="search-button">
+              <button className="search-button" onClick={handleSearchClick}>
                 <img 
                   src="https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/59e068db-4441-4135-b3cf-e3ce80eb899a" 
                   alt="Search" 
@@ -51,16 +67,16 @@ const LelandLandingPage: React.FC = () => {
             <div className="popular-tags">
               <span className="popular-label">Popular:</span>
               <div className="tags-container">
-                <span className="tag">MBA</span>
-                <span className="tag">Career Development</span>
-                <span className="tag">Management Consulting</span>
-                <span className="tag">GRE</span>
-                <span className="tag">Private Equity</span>
-                <span className="tag">Medical School</span>
-                <span className="tag">College</span>
-                <span className="tag">Master's Programs</span>
-                <span className="tag">Law School</span>
-                <span className="tag">Investment Banking</span>
+                <span className="tag" onClick={handleSearchClick}>MBA</span>
+                <span className="tag" onClick={handleSearchClick}>Career Development</span>
+                <span className="tag" onClick={handleSearchClick}>Management Consulting</span>
+                <span className="tag" onClick={handleSearchClick}>GRE</span>
+                <span className="tag" onClick={handleSearchClick}>Private Equity</span>
+                <span className="tag" onClick={handleSearchClick}>Medical School</span>
+                <span className="tag" onClick={handleSearchClick}>College</span>
+                <span className="tag" onClick={handleSearchClick}>Master's Programs</span>
+                <span className="tag" onClick={handleSearchClick}>Law School</span>
+                <span className="tag" onClick={handleSearchClick}>Investment Banking</span>
               </div>
             </div>
           </div>
@@ -272,7 +288,7 @@ const LelandLandingPage: React.FC = () => {
           
           <div className="library-content">
             <h2>Access a library of videos, templates, and examples curated by Leland's top coaches.</h2>
-            <button className="get-started-btn" onClick={() => navigate('/register')}>开始匹配 for free</button>
+            <button className="get-started-btn" onClick={handleJoinPathlinkClick}>开始匹配 for free</button>
           </div>
           
           <div className="library-categories">

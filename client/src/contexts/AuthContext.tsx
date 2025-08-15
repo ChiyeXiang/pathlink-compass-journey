@@ -43,8 +43,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('student');
+    localStorage.removeItem('user');
     setToken(null);
     setIsAuthenticated(false);
+    // 退出登录后跳转到首页
+    window.location.href = '/';
   };
 
   const value = {
