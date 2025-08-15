@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import { User, Lock, ArrowLeft, ArrowRight, Mail } from "lucide-react";
 const Register = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const [registerData, setRegisterData] = useState({
     name: "",
     email: "",
@@ -23,6 +23,13 @@ const Register = () => {
 
   // 如果用户已经登录，重定向到目标页面或默认页面
   const from = location.state?.from?.pathname || '/welcome';
+
+  // 如果用户已经登录，自动重定向
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from);
+    }
+  }, [isAuthenticated, navigate, from]);
 
   const canProceed = () => {
     return registerData.email !== "" && 

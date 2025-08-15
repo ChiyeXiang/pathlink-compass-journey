@@ -158,8 +158,8 @@ const Welcome = () => {
         throw new Error(err?.message || '提交失败');
       }
 
-      // 成功：跳转
-              navigate('/mentor-square');
+      // 成功：跳转到匹配导师页面
+      navigate('/matching-mentors');
     } catch (e) {
       console.error('提交问卷失败:', e);
       setIsLoading(false);

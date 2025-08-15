@@ -10,10 +10,9 @@ import { useEffect } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(true);
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -25,13 +24,12 @@ const Login = () => {
   // 如果用户已经登录，重定向到目标页面或默认页面
   const from = location.state?.from?.pathname || '/welcome';
 
-    // 页面加载时检查 token 是否存在
-    useEffect(() => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        setIsLoggedIn(true);
-      }
-    }, []);
+  // 如果用户已经登录，自动重定向
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from);
+    }
+  }, [isAuthenticated, navigate, from]);
   
   
 
@@ -63,11 +61,9 @@ const Login = () => {
               // 登录失败时保留在登录界面，不跳转
               return;
             } else {
-              localStorage.setItem('token', data.token);
               localStorage.setItem('user', JSON.stringify(data.user));
 
               login(data.token);
-              setIsLoggedIn(true);
               navigate('/welcome');
             }
           } catch (err) {
@@ -97,12 +93,10 @@ const Login = () => {
             const data = await res.json();
 
             if (res.ok) {
-              localStorage.setItem('token', data.token);
               localStorage.setItem('user', JSON.stringify(data.user));
 
               login(data.token);
               alert('注册成功：' + data.message);
-              setIsLoggedIn(true);
               navigate('/welcome');
             } else {
               alert('注册失败：' + data.message || '未知错误');
