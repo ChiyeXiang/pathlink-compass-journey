@@ -47,7 +47,7 @@ const userId = `${datePart}${randomPart}`;
   await newUser.save();
 
   const token = jwt.sign(
-    { email: newUser.email, name: newUser.name},
+    { userId: newUser.userId},
     process.env.JWT_SECRET as string,
     { expiresIn: '7d' }
   );
@@ -78,7 +78,7 @@ export const login = async (req: Request, res: Response) => {
   }
 
   const token = jwt.sign(
-    { email: user.email, name: user.name},
+    { userId: user.userId },
     process.env.JWT_SECRET as string,
     { expiresIn: '7d' }
   );

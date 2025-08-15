@@ -77,7 +77,7 @@ const App = () => (
                 <MentorChain />
               </ProtectedRoute>
             } />
-            <Route path="/coffee-chat" element={
+            <Route path="/coffee-chat/:userId" element={
               <ProtectedRoute>
                 <CoffeeChat />
               </ProtectedRoute>

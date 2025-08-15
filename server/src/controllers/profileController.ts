@@ -7,36 +7,22 @@ import { User } from '../models/user';
 
 // 获取当前用户的基本信息（User）
 export const getCurrentUser = async (req: Request, res: Response) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith('Bearer ')) {
-    return res.status(401).json({ message: '未提供Token' });
-  }
+  if (!req.userId) return res.status(401).json({ message: '未授权' });
+  const user = await User.findOne({ userId: req.userId }).lean();
+  if (!user) return res.status(404).json({ message: '用户不存在' });
 
-  const token = authHeader.split(' ')[1];
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { email: string };
-
-    const user = await findUserByEmail(decoded.email);
-    if (!user) {
-      return res.status(404).json({ message: '用户不存在' });
-    }
-
-    return res.json({
-      name: user.name,
-      email: user.email,
-      userId: user.userId,
-      createdAt: user.createdAt,
-    });
-  } catch {
-    return res.status(401).json({ message: 'Token无效或过期' });
-  }
+  res.json({
+    name: user.name,
+    email: user.email,
+    userId: user.userId,
+    createdAt: user.createdAt,
+  });
 };
 
 // 获取学生信息
 export const getStudentProfile = async (req: Request, res: Response) => {
-  const userId = req.params.userId;
-
   try {
+    const userId = req.userId;
     const student = await Student.findOne({ userId });
     if (!student) {
       return res.status(404).json({ message: '未找到该学生' });
@@ -51,12 +37,11 @@ export const getStudentProfile = async (req: Request, res: Response) => {
 
 // 获取导师信息
 export const getMentorProfile = async (req: Request, res: Response) => {
-  const userId = req.params.userId;
-
   try {
+    const userId = req.userId;
     const mentor = await Mentor.findOne({ userId });
     if (!mentor) {
-      return res.status(404).json({ message: '未找到该导师' });
+      return res.json({ userId, displayName: "", education: "", summary: "", expertise: [], tags: [], availability: [] });
     }
 
     return res.json(mentor);

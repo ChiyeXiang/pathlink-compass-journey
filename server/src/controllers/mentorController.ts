@@ -9,7 +9,8 @@ const isTime = (s: string) => /^\d{2}:\d{2}$/.test(s);
 
 export const upsertMentorProfile = async (req: Request, res: Response) => {
   try {
-    const { userId, payload } = req.body as {
+    const userId = req.userId;
+    const { payload } = req.body as {
       userId?: string;
       payload?: {
         displayName?: string;
@@ -122,24 +123,16 @@ export const listMentors = async (req: Request, res: Response) => {
 
 export const getMentorProfileFromSquare = async (req: Request, res: Response) => {
   try {
-    const auth = req.headers.authorization;
-    if (!auth?.startsWith('Bearer ')) {
-      return res.status(401).json({ message: '未提供 Token' });
-    }
-    const token = auth.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { email: string };
+    const userId = req.userId; // <<—— 来自 authRequired
+    if (!userId) return res.status(401).json({ message: '未认证或Token缺少userId' });
 
-    // 通过 email 找到 User，再拿 userId
-    const user = await findUserByEmail(decoded.email);
-    if (!user) return res.status(404).json({ message: '用户不存在' });
-
-    const mentor = await Mentor.findOne({ userId: user.userId });
+    const mentor = await Mentor.findOne({ userId });
     if (!mentor) return res.status(404).json({ message: '未找到该导师' });
 
     return res.json(mentor);
   } catch (err) {
     console.error('getMyMentorProfile error:', err);
-    return res.status(401).json({ message: 'Token 无效或过期' });
+    return res.status(500).json({ message: '服务器错误' });
   }
 };
 

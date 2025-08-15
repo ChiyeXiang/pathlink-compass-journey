@@ -31,15 +31,40 @@ const Register = () => {
            registerData.code !== "";
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (canProceed()) {
-      // 模拟注册成功
-      const token = 'dummy-token';
-      login(token);
-      navigate(from);
+
+    if (!canProceed()) return;
+
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(registerData)
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // 保存 token 和 user 信息
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        login(data.token); // 可选：更新全局状态
+
+        alert('注册成功，欢迎加入 PathLink!');
+        navigate(from);
+      } else {
+        alert('注册失败：' + (data.message || '未知错误'));
+      }
+    } catch (err) {
+      console.error('注册失败:', err);
+      alert('网络错误，请稍后重试');
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 relative">
@@ -110,16 +135,43 @@ const Register = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="code" className="text-base font-medium mb-2 block">验证码</Label>
-                  <Input
-                    id="code"
-                    type="text"
-                    placeholder="请输入验证码"
-                    value={registerData.code}
-                    onChange={(e) => setRegisterData(prev => ({ ...prev, code: e.target.value }))}
-                    className="h-12 text-base"
-                  />
-                </div>
+                    <Label htmlFor="code">邮箱验证码</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="code"
+                        type="text"
+                        placeholder="请输入邮箱验证码"
+                        value={registerData.code}
+                        onChange={(e) => setRegisterData(prev => ({ ...prev, code: e.target.value }))}
+                      />
+                      <Button
+                        variant="secondary"
+                        onClick={async () => {
+                          if (!registerData.email) return alert("请先填写邮箱");
+                          try {
+                            const res = await fetch('/api/auth/send-code', {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json'
+                              },
+                              body: JSON.stringify({ email: registerData.email })
+                            });
+                            const data = await res.json();
+                            if (res.ok) {
+                              alert("验证码已发送，请检查邮箱");
+                            } else {
+                              alert("发送失败：" + data.message);
+                            }
+                          } catch (err) {
+                            console.error('验证码发送失败', err);
+                            alert('网络错误，无法发送验证码');
+                          }
+                        }}
+                      >
+                        获取验证码
+                      </Button>
+                    </div>
+                  </div>
 
                 <Button
                   type="submit"

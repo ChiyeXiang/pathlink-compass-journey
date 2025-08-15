@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export type TimeSlot = { start: string; end: string };          // HH:mm
 export type DateAvailability = { date: string; slots: TimeSlot[] }; // YYYY-MM-DD
@@ -57,7 +57,31 @@ export default function DateAvailabilityPicker({
   const [grid, setGrid] = useState<Record<string, Set<number>>>({});
   const [dragging, setDragging] = useState<null | { mode: "add" | "remove"; date: string }>(null);
 
-  // 将外部 value 同步进组件状态
+  // 🔒 闸门：当我们是“从 props 同步内部状态”时，不要触发 onChange
+  const syncingFromPropRef = useRef(false);
+
+  // 小工具：比较两个 availability 是否相等（顺序按 date 升序比较）
+  const isSameAvailability = (a: DateAvailability[], b: DateAvailability[]) => {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (a[i].date !== b[i].date) return false;
+      const sa = a[i].slots, sb = b[i].slots;
+      if (sa.length !== sb.length) return false;
+      for (let j = 0; j < sa.length; j++) {
+        if (sa[j].start !== sb[j].start || sa[j].end !== sb[j].end) return false;
+      }
+    }
+    return true;
+  };
+
+  // 把内部 grid 转成 DateAvailability[]
+  const buildAvailability = (dates: string[], g: Record<string, Set<number>>): DateAvailability[] =>
+    dates.map(d => {
+      const idxs = Array.from(g[d] || []).sort((a, b) => a - b);
+      return { date: d, slots: compress(times, idxs) };
+    });
+
+  // ① 从外部 value 同步到内部状态（只做“赋值”，并拉下闸门）
   useEffect(() => {
     const dl = (value || []).map(v => v.date).sort();
     const next: Record<string, Set<number>> = {};
@@ -70,58 +94,68 @@ export default function DateAvailabilityPicker({
       });
       next[d.date] = set;
     });
+
+    syncingFromPropRef.current = true;           // ⛔️ 拉下闸门
     setDateList(dl);
     setGrid(next);
-    // 若没有 activeDate，默认选第一个
-    setActiveDate(prev => prev && dl.includes(prev) ? prev : dl[0] ?? null);
+    setActiveDate(prev => (prev && dl.includes(prev) ? prev : dl[0] ?? null));
   }, [value, times]);
 
-  // 把内部 grid 写回外部 value
-  const commit = (dates: string[], g: Record<string, Set<number>>) => {
-    const next: DateAvailability[] = dates.map(d => {
-      const idxs = Array.from(g[d] || []).sort((a, b) => a - b);
-      return { date: d, slots: compress(times, idxs) };
-    });
-    onChange(next);
-  };
+  // ② 内部状态变化 → 仅在和 props 不同的时候才回传 onChange
+  useEffect(() => {
+    const next = buildAvailability(dateList, grid);
 
-  // 添加一个日期（只在选择器选中时添加）
+    // 如果是刚从 props 同步下来的这一次，直接放行并抬起闸门，不回传
+    if (syncingFromPropRef.current) {
+      syncingFromPropRef.current = false;
+      return;
+    }
+
+    // 如果与外部 value 相同，也不回传，避免环路
+    if (isSameAvailability(next, value || [])) return;
+
+    onChange(next);
+  }, [dateList, grid, times, onChange, value]);
+  
+
+  // 添加日期 —— 只更新本地，不再立即调用 onChange
   const addDate = (date: string) => {
     if (!isDate(date)) return;
-    if (dateList.includes(date)) { setActiveDate(date); return; }
-    const nextDates = [...dateList, date].sort();
-    const nextGrid = { ...grid, [date]: new Set<number>() };
-    setDateList(nextDates);
-    setGrid(nextGrid);
+    if (dateList.includes(date)) {
+      setActiveDate(date);
+      return;
+    }
+    setDateList((prev) => {
+      const next = [...prev, date].sort();
+      return next;
+    });
+    setGrid((prev) => ({ ...prev, [date]: new Set<number>() }));
     setActiveDate(date);
-    commit(nextDates, nextGrid);
   };
 
-  // 删除当前日期
+  // 删除日期 —— 只更新本地，不再立即调用 onChange
   const removeDate = (date: string) => {
-    const nextDates = dateList.filter(d => d !== date);
-    const nextGrid = { ...grid };
-    delete nextGrid[date];
-    setDateList(nextDates);
-    setGrid(nextGrid);
-    // 选择一个新的激活日期
-    const nextActive = nextDates.length ? nextDates[Math.max(0, nextDates.indexOf(date) - 1)] ?? nextDates[0] : null;
-    setActiveDate(nextActive);
-    commit(nextDates, nextGrid);
+    setDateList((prev) => prev.filter((d) => d !== date));
+    setGrid((prev) => {
+      const n = { ...prev };
+      delete n[date];
+      return n;
+    });
+    setActiveDate((prev) => (prev === date ? null : prev));
   };
 
-  // 切换单格
+  // 切换单格 —— 只更新本地，不再立即调用 onChange
   const toggleCell = (date: string, rowIdx: number, force?: "add" | "remove") => {
-    setGrid(prev => {
+    setGrid((prev) => {
       const daySet = new Set(prev[date] ?? []);
       const has = daySet.has(rowIdx);
       if (force === "add") daySet.add(rowIdx);
       else if (force === "remove") daySet.delete(rowIdx);
-      else { if (has) daySet.delete(rowIdx); else daySet.add(rowIdx); }
-      const next = { ...prev, [date]: daySet };
-      // 即改即存，保持外部同步
-      commit(dateList, next);
-      return next;
+      else {
+        if (has) daySet.delete(rowIdx);
+        else daySet.add(rowIdx);
+      }
+      return { ...prev, [date]: daySet };
     });
   };
 

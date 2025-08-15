@@ -3,7 +3,8 @@ import { Student } from '../models/student';
 
 export const upsertWelcomeSurvey = async (req: Request, res: Response) => {
   try {
-    const { userId, formData } = req.body;
+    const userId = req.userId; 
+    const { formData } = req.body;
     if (!userId || !formData) {
       return res.status(400).json({ message: '缺少 userId 或 formData' });
     }
@@ -11,9 +12,9 @@ export const upsertWelcomeSurvey = async (req: Request, res: Response) => {
     const update = {
       AppDegree: formData.AppDegree ?? [],
       multipleCountries: formData.multipleCountries ?? [],
-      scholarshipInterested: formData.scholarshipInterested ?? [],
       field: formData.field ?? [],
       DreamCountrySchool: formData.DreamCountrySchool ?? [],
+      needs: formData.needs ?? [],
       targetDetails: formData.targetDetails ?? '',
       budgetPreference: formData.budgetPreference ?? [],
     };

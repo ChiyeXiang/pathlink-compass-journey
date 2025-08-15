@@ -168,7 +168,8 @@ const MentorDetail = () => {
 
   const handleCoffeeChat = () => {
     // 你后续可以在这里把 mentor.userId 传入预约页
-    navigate("/coffee-chat");
+    if (!mentor) return;
+    navigate(`/coffee-chat/${mentor.userId}`);
   };
 
   const handlePurchase = () => {
