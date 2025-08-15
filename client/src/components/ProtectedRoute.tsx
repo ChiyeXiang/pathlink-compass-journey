@@ -14,6 +14,12 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const { isAuthenticated } = useAuth();
   const location = useLocation();
 
+  console.log('ProtectedRoute:', { 
+    pathname: location.pathname, 
+    isAuthenticated, 
+    requireAuth 
+  });
+
   // 如果不需要认证，直接渲染子组件
   if (!requireAuth) {
     return <>{children}</>;
@@ -21,9 +27,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // 如果需要认证但用户未登录，重定向到登录页面
   if (!isAuthenticated) {
+    console.log('ProtectedRoute: 用户未登录，重定向到登录页面');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // 用户已登录，渲染子组件
+  console.log('ProtectedRoute: 用户已登录，渲染子组件');
   return <>{children}</>;
 };

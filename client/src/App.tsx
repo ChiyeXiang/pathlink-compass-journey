@@ -38,6 +38,7 @@ import PhoneNumber from "./pages/mentor-setup/PhoneNumber";
 import MentorQuestionsDone from "./pages/mentor-setup/MentorQuestionsDone";
 import TestNavigation from "./pages/mentor-setup/TestNavigation";
 import MentorProfile from "./pages/MentorPofile";
+import MatchingMentors from "./pages/MatchingMentors";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,11 @@ const App = () => (
             <Route path="/register" element={<Register />} />
             <Route path="/mentor-square" element={<MentorSquare />} />
             <Route path="/mentor-registration" element={<MentorRegistration />} />
+            <Route path="/matching-mentors" element={
+              <ProtectedRoute>
+                <MatchingMentors />
+              </ProtectedRoute>
+            } />
             
             {/* 受保护的路由 - 需要登录 */}
             <Route path="/welcome" element={

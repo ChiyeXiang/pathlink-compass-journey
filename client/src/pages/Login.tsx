@@ -10,10 +10,9 @@ import { useEffect } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(true);
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -25,13 +24,12 @@ const Login = () => {
   // 如果用户已经登录，重定向到目标页面或默认页面
   const from = location.state?.from?.pathname || '/welcome';
 
-    // 页面加载时检查 token 是否存在
-    useEffect(() => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        setIsLoggedIn(true);
-      }
-    }, []);
+  // 如果用户已经登录，自动重定向
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from);
+    }
+  }, [isAuthenticated, navigate, from]);
   
   
 
@@ -43,73 +41,76 @@ const Login = () => {
     e.preventDefault();
     if (canProceed()) {
       if (isLoginMode) {
-      if (loginData.email && loginData.password) {
-        try {
-          const res = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              email: loginData.email,
-              password: loginData.password
-            })
-          });
+        if (loginData.email && loginData.password) {
+          try {
+            const res = await fetch('/api/auth/login', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                email: loginData.email,
+                password: loginData.password
+              })
+            });
 
-          const data = await res.json();
+            const data = await res.json();
 
-          if (!res.ok) {
-            alert(data.message || '登录失败');
-          } else {
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
+            if (!res.ok) {
+              alert(data.message || '登录失败');
+              // 登录失败时保留在登录界面，不跳转
+              return;
+            } else {
+              localStorage.setItem('user', JSON.stringify(data.user));
 
-            setIsLoggedIn(true);
-            navigate('/mentor-square');
+              login(data.token);
+              navigate('/welcome');
+            }
+          } catch (err) {
+            console.error(err);
+            alert('网络错误，请稍后重试');
+            // 网络错误时也保留在登录界面，不跳转
+            return;
           }
-        } catch (err) {
-          console.error(err);
-          alert('网络错误，请稍后重试');
+        }
+      } else {
+        if (
+          loginData.email &&
+          loginData.password &&
+          loginData.confirmPassword &&
+          loginData.name &&
+          loginData.password === loginData.confirmPassword
+        ) {
+          try {
+            const res = await fetch('/api/auth/register', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(loginData)
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+              localStorage.setItem('user', JSON.stringify(data.user));
+
+              login(data.token);
+              alert('注册成功：' + data.message);
+              navigate('/welcome');
+            } else {
+              alert('注册失败：' + data.message || '未知错误');
+              // 注册失败时保留在登录界面，不跳转
+              return;
+            }
+          } catch (err) {
+            console.error('注册出错', err);
+            alert('网络错误或服务器未响应');
+            // 网络错误时也保留在登录界面，不跳转
+            return;
+          }
         }
       }
-    } else {
-      if (
-        loginData.email &&
-        loginData.password &&
-        loginData.confirmPassword &&
-        loginData.name &&
-        loginData.password === loginData.confirmPassword
-      ) {
-        try {
-          const res = await fetch('/api/auth/register', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(loginData)
-          });
-
-          const data = await res.json();
-
-          if (res.ok) {
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
-
-            alert('注册成功：' + data.message);
-            setIsLoggedIn(true);
-            navigate('/welcome');
-          } else {
-            alert('注册失败：' + data.message || '未知错误');
-          }
-        } catch (err) {
-          console.error('注册出错', err);
-          alert('网络错误或服务器未响应');
-        }
-      }
-
-
-    }
-      navigate('/mentor-square');
     }
   };
 

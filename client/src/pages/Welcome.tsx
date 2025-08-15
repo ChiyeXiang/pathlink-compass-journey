@@ -184,7 +184,8 @@ const Welcome = () => {
         throw new Error(err?.message || "提交失败");
       }
 
-      navigate("/mentor-chain"); // 成功跳转
+      // 成功：跳转到匹配导师页面
+      navigate('/matching-mentors');
     } catch (e) {
       console.error("提交问卷失败:", e);
       setIsLoading(false);

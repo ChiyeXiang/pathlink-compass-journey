@@ -31,6 +31,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (storedToken) {
       setToken(storedToken);
       setIsAuthenticated(true);
+      console.log('AuthContext: 从localStorage恢复登录状态');
+    } else {
+      console.log('AuthContext: 未找到token，用户未登录');
     }
   }, []);
 
@@ -38,13 +41,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.setItem('token', newToken);
     setToken(newToken);
     setIsAuthenticated(true);
+    console.log('AuthContext: 用户登录成功');
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('student');
+    localStorage.removeItem('user');
     setToken(null);
     setIsAuthenticated(false);
+    console.log('AuthContext: 用户退出登录');
+    // 退出登录后跳转到首页
+    window.location.href = '/';
   };
 
   const value = {

@@ -1,16 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageHeader } from "@/components/ui/page-header";
 import { useAuth } from "@/contexts/AuthContext";
-import { User, Lock, ArrowLeft, ArrowRight } from "lucide-react";
+import { User, Lock, ArrowLeft, ArrowRight, Mail } from "lucide-react";
 
 const Register = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const [registerData, setRegisterData] = useState({
     name: "",
     email: "",
@@ -18,9 +18,18 @@ const Register = () => {
     confirmPassword: "",
     code: ""
   });
+  const [isSendingCode, setIsSendingCode] = useState(false);
+  const [countdown, setCountdown] = useState(0);
 
   // 如果用户已经登录，重定向到目标页面或默认页面
   const from = location.state?.from?.pathname || '/welcome';
+
+  // 如果用户已经登录，自动重定向
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from);
+    }
+  }, [isAuthenticated, navigate, from]);
 
   const canProceed = () => {
     return registerData.email !== "" && 
@@ -29,6 +38,74 @@ const Register = () => {
            registerData.name !== "" && 
            registerData.password === registerData.confirmPassword && 
            registerData.code !== "";
+  };
+
+  const canSendCode = () => {
+    return registerData.email !== "" && 
+           registerData.password !== "" && 
+           registerData.confirmPassword !== "" && 
+           registerData.password === registerData.confirmPassword && 
+           countdown === 0;
+  };
+
+  const getPasswordError = () => {
+    if (registerData.confirmPassword !== "" && registerData.password !== registerData.confirmPassword) {
+      return "两次输入的密码不一致";
+    }
+    return "";
+  };
+
+  const handleSendCode = async () => {
+    if (!canSendCode()) {
+      const passwordError = getPasswordError();
+      if (passwordError) {
+        alert(passwordError);
+      } else if (!registerData.email) {
+        alert('请先填写邮箱');
+      } else if (!registerData.password) {
+        alert('请先填写密码');
+      } else if (!registerData.confirmPassword) {
+        alert('请先填写确认密码');
+      }
+      return;
+    }
+    
+    setIsSendingCode(true);
+    try {
+      // 模拟发送验证码的API调用
+      const res = await fetch('/api/auth/send-code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: registerData.email
+        })
+      });
+
+      if (res.ok) {
+        alert('验证码已发送到您的邮箱');
+        // 开始倒计时
+        setCountdown(60);
+        const timer = setInterval(() => {
+          setCountdown(prev => {
+            if (prev <= 1) {
+              clearInterval(timer);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      } else {
+        const data = await res.json();
+        alert(data.message || '发送验证码失败');
+      }
+    } catch (err) {
+      console.error('发送验证码失败:', err);
+      alert('网络错误，请稍后重试');
+    } finally {
+      setIsSendingCode(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -130,8 +207,11 @@ const Register = () => {
                     placeholder="请再次输入密码"
                     value={registerData.confirmPassword}
                     onChange={(e) => setRegisterData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                    className="h-12 text-base"
+                    className={`h-12 text-base ${getPasswordError() ? 'border-red-500 focus:border-red-500' : ''}`}
                   />
+                  {getPasswordError() && (
+                    <p className="text-red-500 text-sm mt-1">{getPasswordError()}</p>
+                  )}
                 </div>
 
                 <div>
