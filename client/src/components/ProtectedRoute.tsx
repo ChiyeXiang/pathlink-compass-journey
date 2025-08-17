@@ -4,34 +4,29 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requireAuth?: boolean;
+  requireAuth?: boolean; // 默认需要登录
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
-  children, 
-  requireAuth = true 
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  requireAuth = true,
 }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, checkingAuth } = useAuth();
   const location = useLocation();
 
-  console.log('ProtectedRoute:', { 
-    pathname: location.pathname, 
-    isAuthenticated, 
-    requireAuth 
-  });
-
-  // 如果不需要认证，直接渲染子组件
-  if (!requireAuth) {
-    return <>{children}</>;
+  // 1) 还在校验 token，先占位，避免闪跳
+  if (requireAuth && checkingAuth) {
+    return <div style={{ padding: 16 }}>检查登录状态中…</div>;
   }
 
-  // 如果需要认证但用户未登录，重定向到登录页面
+  // 2) 不需要认证，直接渲染
+  if (!requireAuth) return <>{children}</>;
+
+  // 3) 需要认证但未登录 → 跳登录，并记录来源路由
   if (!isAuthenticated) {
-    console.log('ProtectedRoute: 用户未登录，重定向到登录页面');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // 用户已登录，渲染子组件
-  console.log('ProtectedRoute: 用户已登录，渲染子组件');
+  // 4) 已登录
   return <>{children}</>;
 };

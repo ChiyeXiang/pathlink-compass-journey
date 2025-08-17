@@ -354,6 +354,63 @@ const Tasks = () => {
         </Card>
 
 
+        {/* ✅ 新增：学业与个人信息展示卡 */}
+        <Card className="mb-6 shadow-soft border-0">
+          <CardHeader>
+            <CardTitle className="text-lg">学业与个人信息</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">学校</div>
+                <div className="text-sm">{studentInfo?.university || "未填写"}</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">专业</div>
+                <div className="text-sm">{studentInfo?.major || "未填写"}</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">毕业年份</div>
+                <div className="text-sm">{studentInfo?.graduationYear || "未填写"}</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">GPA</div>
+                <div className="text-sm">{studentInfo?.gpa || "未填写"}</div>
+              </div>
+            </div>
+
+            <div>
+              <div className="text-xs text-muted-foreground mb-1">实习 / 工作经验</div>
+              <div className="text-sm whitespace-pre-line">{studentInfo?.experience || "未填写"}</div>
+            </div>
+
+            <div>
+              <div className="text-xs text-muted-foreground mb-1">兴趣爱好</div>
+              <div className="text-sm whitespace-pre-line">{studentInfo?.interests || "未填写"}</div>
+            </div>
+
+            <div>
+              <div className="text-xs text-muted-foreground mb-1">职业目标</div>
+              <div className="text-sm whitespace-pre-line">{studentInfo?.goals || "未填写"}</div>
+            </div>
+
+            {/* 可选：问卷里的目标学校/补充说明 */}
+            {studentInfo?.targetDetails && (
+              <div>
+                <div className="text-xs text-muted-foreground mb-1">目标/补充说明</div>
+                <div className="text-sm whitespace-pre-line">{studentInfo.targetDetails}</div>
+              </div>
+            )}
+
+            <div className="pt-2">
+              <Button variant="outline" onClick={() => navigate("/profile-setup")}>
+                去完善 / 修改个人资料
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+
 
         
 

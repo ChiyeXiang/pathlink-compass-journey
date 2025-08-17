@@ -14,7 +14,6 @@ interface FormData {
   multipleCountries: string[];
   needs: string[];
   field: string[];
-  DreamCountrySchool: string[];
   targetDetails: string;
   budgetPreference: string[];
 }
@@ -28,8 +27,8 @@ const Welcome = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [prefilled, setPrefilled] = useState(false);
 
-  // （可选）用户信息只用于展示，不再依赖其 userId 提交
   const [user, setUser] = useState<any>(null);
 
   const [formData, setFormData] = useState<FormData>({
@@ -37,7 +36,6 @@ const Welcome = () => {
     multipleCountries: [],
     needs: [],
     field: [],
-    DreamCountrySchool: [],
     targetDetails: "",
     budgetPreference: [],
   });
@@ -103,6 +101,18 @@ const Welcome = () => {
 
   const totalSteps = 5;
 
+  const isSurveyComplete = (d: Pick<FormData,
+    "AppDegree"|"multipleCountries"|"needs"|"field"|"budgetPreference"
+  >) => {
+    return (
+      d.AppDegree?.length > 0 &&
+      d.field?.length > 0 &&
+      d.multipleCountries?.length > 0 &&
+      d.needs?.length > 0 &&
+      d.budgetPreference?.length > 0
+    );
+  };
+
   // 如果未登录，跳回首页/登录；已登录则可顺便展示用户信息
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -112,15 +122,41 @@ const Welcome = () => {
     }
     (async () => {
       try {
-        const res = await fetch("/api/auth/me", {
+        const me = await fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } });
+        if (!me.ok) return;
+        const meData = await me.json();
+        setUser(meData);
+
+        // 拉取该 userId 的问卷
+        const s = await fetch(`/api/student/profile/${meData.userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data);
+
+        if (s.ok) {
+          const student = await s.json();
+
+          // 兼容后端字段名与前端一致时直接赋值；若后端命名稍有差异请在此做映射
+          const restored: FormData = {
+            AppDegree: student.AppDegree ?? [],
+            multipleCountries: student.multipleCountries ?? [],
+            needs: student.needs ?? student.scholarshipInterested ?? [], // 你之前用 scholarshipInterested，这里做个兼容
+            field: student.field ?? [],
+            targetDetails: student.targetDetails ?? "",
+            budgetPreference: student.budgetPreference ?? [],
+          };
+
+          // 回填
+          setFormData(restored);
+          setPrefilled(true);
+
+          // 若已完整，直接跳
+          if (isSurveyComplete(restored)) {
+            navigate("/mentor-chain");
+            return;
+          }
         }
-      } catch (err) {
-        console.error("获取用户信息失败:", err);
+      } catch (e) {
+        console.error("初始化失败:", e);
       }
     })();
   }, [navigate]);

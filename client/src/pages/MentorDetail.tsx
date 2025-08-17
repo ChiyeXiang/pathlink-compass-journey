@@ -234,29 +234,55 @@ const MentorDetail = () => {
         {/* Mentor Profile */}
         <Card className="mb-6 shadow-soft border-0">
           <CardContent className="p-6">
-            <div className="flex items-start space-x-6">
+            <div className="flex items-start gap-6">
               <Avatar className="w-20 h-20">
-                <AvatarImage alt={mentor.displayName} />
+                <AvatarImage src={avatarSrc} alt={displayName} />
                 <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
-                  {mentor.displayName.charAt(0)}
+                  {displayName.charAt(0)}
                 </AvatarFallback>
               </Avatar>
 
-                <div className="mb-4">
-                  <div className="flex items-center mb-2">
+              <div className="flex-1">
+                <div className="mb-2">
+                  <h2 className="text-2xl font-bold text-foreground">{displayName}</h2>
+                </div>
+
+                {/* 教育背景 */}
+                {mentor.education && (
+                  <div className="flex items-center mb-2 text-sm text-foreground">
                     <Award className="w-4 h-4 mr-2 text-primary" />
-                    <span className="font-semibold text-foreground">{mentor.education}</span>
+                    <span>{mentor.education}</span>
                   </div>
-                </div>
+                )}
 
-                <div className="flex flex-wrap gap-2 mb-4">
+                {/* 简介 */}
+                {mentor.summary && (
+                  <p className="text-sm text-muted-foreground mb-3">{mentor.summary}</p>
+                )}
 
-                </div>
+                {/* 标签 */}
+                {mentor.tags && mentor.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {mentor.tags.map((t) => (
+                      <Badge key={t} variant="secondary">
+                        {t}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
 
-                <div className="space-y-1">
-                  
-                </div>
+                {/* 擅长方向 */}
+                {mentor.expertise && mentor.expertise.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {mentor.expertise.map((ex) => (
+                      <Badge key={ex} className="bg-primary/10 text-primary" variant="outline">
+                        #{ex}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
+            </div>
 
 
             <div className="mt-6 pt-6 border-t">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,29 +9,128 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PageHeader } from "@/components/ui/page-header";
 import { User, Clock, Quote } from "lucide-react";
 
+type ProfileForm = {
+  name: string;
+  phone: string;
+  university: string;
+  major: string;
+  graduationYear: string; // 存字符串即可
+  gpa: string;
+  experience: string;
+  interests: string;
+  goals: string;
+};
+
+const emptyForm: ProfileForm = {
+  name: "",
+  phone: "",
+  university: "",
+  major: "",
+  graduationYear: "",
+  gpa: "",
+  experience: "",
+  interests: "",
+  goals: "",
+};
+
 const ProfileSetup = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    university: "",
-    major: "",
-    graduationYear: "",
-    gpa: "",
-    experience: "",
-    interests: "",
-    goals: ""
-  });
+  const [formData, setFormData] = useState<ProfileForm>(emptyForm);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // 进来先拉取当前登录用户的学生资料进行预填（/api/student/profile/me）
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    (async () => {
+      try {
+        const res = await fetch("/api/student/profile/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (res.status === 401) {
+          // 未登录或 token 过期
+          navigate("/login");
+          return;
+        }
+
+        if (!res.ok) {
+          // 拉取失败也允许继续填写
+          console.warn("加载学生资料失败：", await res.text());
+          setLoading(false);
+          return;
+        }
+
+        const student = await res.json(); // 可能是 null
+        if (student) {
+          // 只把 profile 的字段安全回填（后端 Student 模型里新增的这组字段）
+          setFormData({
+            name: student.name ?? "",
+            phone: student.phone ?? "",
+            university: student.university ?? "",
+            major: student.major ?? "",
+            graduationYear: student.graduationYear ?? "",
+            gpa: student.gpa ?? "",
+            experience: student.experience ?? "",
+            interests: student.interests ?? "",
+            goals: student.goals ?? "",
+          });
+        }
+      } catch (e) {
+        console.error("加载学生资料异常：", e);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // 保存个人信息到localStorage
-    localStorage.setItem('studentProfile', JSON.stringify(formData));
-    // 跳转到首页或任务页面
-    navigate('/tasks');
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const res = await fetch("/api/student/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // 后端中间件读 userId
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        const txt = await res.text().catch(() => "");
+        throw new Error(txt || "保存失败");
+      }
+
+      // 保存成功：你可以跳到任务页/主页/个人中心等
+      navigate("/tasks");
+    } catch (err) {
+      console.error(err);
+      alert("保存失败，请稍后重试");
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-soft">
+        <PageHeader showHomeButton={true} showProfileButtons={false} />
+        <div className="container max-w-4xl mx-auto px-4 py-10">加载中…</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-soft">
@@ -59,29 +158,19 @@ const ProfileSetup = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="firstName">姓名</Label>
+                      <Label htmlFor="name">姓名</Label>
                       <Input
-                        id="firstName"
-                        value={formData.firstName}
-                        onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+                        id="name"
+                        value={formData.name}
+                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                         placeholder="请输入你的姓名"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="lastName">姓氏</Label>
-                      <Input
-                        id="lastName"
-                        value={formData.lastName}
-                        onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
-                        placeholder="请输入你的姓氏"
                         required
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+                    {/* <div>
                       <Label htmlFor="email">邮箱</Label>
                       <Input
                         id="email"
@@ -91,7 +180,7 @@ const ProfileSetup = () => {
                         placeholder="请输入你的邮箱"
                         required
                       />
-                    </div>
+                    </div> */}
                     <div>
                       <Label htmlFor="phone">电话</Label>
                       <Input

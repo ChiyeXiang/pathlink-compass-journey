@@ -12,8 +12,20 @@ const StudentSchema = new mongoose.Schema(
     needs:             { type: [String], default: [] },
     targetDetails:     { type: String, default: '' },
     budgetPreference:  { type: [String], default: [] },
+
+    // —— ProfileSetup 学生基本资料 —— //
+    name:      { type: String, default: '' },
+    phone:          { type: String, default: '' },
+    university:     { type: String, default: '' },
+    major:          { type: String, default: '' },
+    graduationYear: { type: String, default: '' },
+    gpa:            { type: String, default: '' },
+    experience:     { type: String, default: '' },
+    interests:      { type: String, default: '' },
+    goals:          { type: String, default: '' },
   },
-  { timestamps: true }
+  
+  { timestamps: true , versionKey: false}
 );
 
 export const Student = mongoose.model('Student', StudentSchema);

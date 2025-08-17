@@ -73,7 +73,15 @@ const CoffeeChat = () => {
           setLoading(false);
           return;
         }
-        const res = await fetch(`/api/mentor/profile/${userId}`);
+
+        const token = localStorage.getItem("token");
+        const res = await fetch(`/api/mentor/profile/${userId}`, {
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
+        
         if (!res.ok) {
           console.error("加载导师失败：", await res.text());
           setLoading(false);
