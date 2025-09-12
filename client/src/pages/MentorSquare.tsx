@@ -13,7 +13,29 @@ type MentorCard = {
   tags?: string[];
   // 你可以在卡片上显示“最近可约日期”
   availability?: { date: string; slots: { start: string; end: string }[] }[];
+  score: number;
 };
+
+type FormData = {
+  AppDegree: string[];
+  multipleCountries: string[];
+  needs: string[];
+  field: string[];
+  DreamCountrySchool: string[];
+  targetDetails: string;
+  budgetPreference: string[];
+};
+function toFormDataFromStudent(s: any): FormData {
+  return {
+    AppDegree: s?.AppDegree ?? [],
+    multipleCountries: s?.multipleCountries ?? [],
+    needs: s?.needs ?? [],
+    field: s?.field ?? [],
+    DreamCountrySchool: s?.DreamCountrySchool ?? [],
+    targetDetails: s?.targetDetails ?? "",
+    budgetPreference: s?.budgetPreference ?? [],
+  };
+}
 
 const MentorSquare = () => {
   const navigate = useNavigate();
@@ -24,6 +46,7 @@ const MentorSquare = () => {
   const [tag, setTag] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
+  const [error, setError] = useState<string>("");
 
   const fetchList = async (reset = false) => {
     try {
@@ -48,10 +71,86 @@ const MentorSquare = () => {
     }
   };
 
-   useEffect(() => {
-    // 初次加载
-    fetchList(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  //  useEffect(() => {
+  //   // 初次加载
+  //   fetchList(true);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+
+ useEffect(() => {
+    const run = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        // 1) 先尝试用本地缓存的问卷
+        let formData: FormData | null = null;
+        const local = localStorage.getItem("applicationData");
+        if (local) {
+          try {
+            formData = JSON.parse(local);
+          } catch {}
+        }
+
+        const token = localStorage.getItem("token") || "";
+
+        // 2) 本地没有问卷，就从后端拿学生档案来凑 formData
+        if (!formData) {
+          if (!token) {
+            // 没 token 也没本地问卷：让用户去填写
+            setError("请先完成问卷，我们才能为你推荐导师");
+            setLoading(false);
+            return;
+          }
+          // /api/auth/me → userId
+          const meRes = await fetch("/api/auth/me", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!meRes.ok) throw new Error(await meRes.text());
+          const me = await meRes.json();
+
+          // /api/student/profile/:userId → 学生问卷
+          const sp = await fetch(`/api/student/profile/${me.userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (sp.ok) {
+            const student = await sp.json();
+            formData = toFormDataFromStudent(student);
+          }
+        }
+
+        // 3) 仍然没有问卷：引导去 welcome
+        if (!formData || !Array.isArray(formData.AppDegree)) {
+          setError("请先完成问卷，我们才能为你推荐导师");
+          setLoading(false);
+          return;
+        }
+
+        // 4) 请求匹配接口
+        const res = await fetch("/api/matching", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ formData, topK: 12 }),
+        });
+
+        if (!res.ok) {
+          const msg = await res.text();
+          throw new Error(msg || "匹配失败");
+        }
+
+        const data = await res.json(); // { items: MentorCard[] }
+        setMentors(data.items || []);
+      } catch (e: any) {
+        console.error("加载推荐导师失败：", e);
+        setError(e?.message || "加载推荐导师失败");
+      } finally {
+        setLoading(false);
+      }
+    };
+    run();
   }, []);
 
   const onSearch = () => {

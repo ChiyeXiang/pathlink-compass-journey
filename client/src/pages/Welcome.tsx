@@ -139,7 +139,7 @@ const Welcome = () => {
           const restored: FormData = {
             AppDegree: student.AppDegree ?? [],
             multipleCountries: student.multipleCountries ?? [],
-            needs: student.needs ?? student.scholarshipInterested ?? [], // 你之前用 scholarshipInterested，这里做个兼容
+            needs: student.needs ?? student.needs ?? [],  
             field: student.field ?? [],
             targetDetails: student.targetDetails ?? "",
             budgetPreference: student.budgetPreference ?? [],

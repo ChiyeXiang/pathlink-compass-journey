@@ -26,6 +26,10 @@ const MentorSchema = new mongoose.Schema(
     summary: { type: String, default: '' },                 // 一句个人概括（如：有什么优势，有多少年，多少学生的从业经验）（示例：专注于商科申请5年+，累计帮助120+学生成功申请梦校）
     tags: { type: [String], enum: ALL_TAGS, default: [] },  // 标签
     availability: { type: [DateAvailabilitySchema], default: [] },  // 有空的时间
+
+      // 向量与文本
+      embedText: { type: String, default: '' },
+      embedding: { type: [Number], default: [] },
   },
   { timestamps: true }
 );
